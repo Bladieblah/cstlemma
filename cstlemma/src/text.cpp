@@ -623,6 +623,180 @@ void text::Lemmatise(FILE *fpo, const char *Sep, tallyStruct *tally, unsigned in
     }
 }
 
+void text::Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas)
+{
+    flex::baseformsAreLowercase = baseformsAreLowercase;
+    lext::baseformsAreLowercase = baseformsAreLowercase;
+    Word::DictUnique = DictUnique;
+    Word::RulesUnique = RulesUnique;
+    baseformpointer::UseLemmaFreqForDisambiguation = UseLemmaFreqForDisambiguation;
+    taggedWord::sep = Sep;
+    basefrm::sep = Sep;
+
+    pcmpBaseforms = cmpBaseforms_w;
+    switch (SortOutput)
+    {
+    case (SORTWORD << 4) + (SORTFREQ << 2) + SORTPOS:
+    case (SORTWORD << 2) + SORTFREQ:
+        pcmpBaseforms_f = cmpBaseforms_wf;
+        Word::cmp = &Word::comp_wf;
+        break;
+    case (SORTWORD << 4) + (SORTPOS << 2) + SORTFREQ:
+    case (SORTWORD << 2) + SORTPOS:
+    case SORTWORD:
+        pcmpBaseforms_f = cmpBaseforms_wf;
+        Word::cmp = &Word::comp_wf;
+        break;
+    case (SORTPOS << 4) + (SORTFREQ << 2) + SORTWORD:
+    case (SORTPOS << 2) + SORTFREQ:
+        pcmpBaseforms_f = cmpBaseforms_fw;
+        Word::cmp = &Word::comp_fw;
+        break;
+    case (SORTPOS << 4) + (SORTWORD << 2) + SORTFREQ:
+    case (SORTPOS << 2) + SORTWORD:
+        pcmpBaseforms_f = cmpBaseforms_wf;
+        Word::cmp = &Word::comp_wf;
+        break;
+    case (SORTFREQ << 4) + (SORTWORD << 2) + SORTPOS:
+    case (SORTFREQ << 2) + SORTWORD:
+    case SORTFREQ:
+        pcmpBaseforms_f = cmpBaseforms_fw;
+        Word::cmp = &Word::comp_fw;
+        break;
+    case (SORTFREQ << 4) + (SORTPOS << 2) + SORTWORD:
+    case (SORTFREQ << 2) + SORTPOS:
+        pcmpBaseforms_f = cmpBaseforms_fw;
+        Word::cmp = &Word::comp_fw;
+        break;
+    default:
+        pcmpBaseforms_f = cmpBaseforms_wf;
+        Word::cmp = &Word::comp_wf;
+        break;
+    }
+
+    this->aConflict = this->aConflictTypes = this->newcnt = this->newcntTypes = 0;
+    if (tally)
+    {
+        tally->totcnt = total;
+        tally->totcntTypes = reducedtotal;
+    }
+
+    cntD = 0;
+    cntL = 0;
+    if (nice)
+        LOG1LINE("looking up words");
+    if (Root)
+    {
+        for (size_t i = 0; i < N; ++i)
+        {
+            Root[i]->lookup(this);
+        }
+    }
+    if (tally)
+    {
+        tally->newhom = this->aConflict;
+        tally->newhomTypes = this->aConflictTypes;
+        tally->newcnt = this->newcnt;
+        tally->newcntTypes = this->newcntTypes;
+    }
+    if (mergeLemmas)
+    {
+        basefrmarrD = new basefrm *[0];
+        basefrmarrL = new basefrm *[cntL + cntD];
+        ppD = &basefrmarrL[cntL];
+        ppL = &basefrmarrL[0];
+        cntL = cntL + cntD;
+        cntD = 0;
+    }
+    else
+    {
+        basefrmarrD = new basefrm *[cntD];
+        basefrmarrL = new basefrm *[cntL];
+        ppD = &basefrmarrD[0];
+        ppL = &basefrmarrL[0];
+    }
+    if (Root)
+    {
+        for (size_t i = 0; i < N; ++i)
+            Root[i]->assignTo(this->ppD, this->ppL);
+    }
+    if (mergeLemmas)
+    {
+        assert(cntD == 0);
+        assert(cntL == ppD - &basefrmarrL[0]);
+    }
+    else
+    {
+        assert(cntD == ppD - &basefrmarrD[0]);
+        assert(cntL == ppL - &basefrmarrL[0]);
+    }
+    sortBaseforms(basefrmarrD, cntD);
+    sortBaseforms(basefrmarrL, cntL);
+
+    if (UseLemmaFreqForDisambiguation != 2 /*Why?-> && lext::DictUnique*/)
+    {
+        if (nice)
+            LOG1LINE("disambiguation by lemma frequency");
+        if (Root)
+        {
+            for (size_t i = 0; i < N; ++i)
+                Root[i]->DisambiguateByLemmaFrequency();
+            for (size_t i = 0; i < N; ++i)
+                Root[i]->decFreq();
+        }
+        if (nice)
+            LOG1LINE("...disambiguated by lemma frequency");
+    }
+    if (TagFriends && InputHasTags)
+    {
+        if (nice)
+            LOG1LINE("disambiguation by tag friends");
+        if (Root)
+        {
+            for (size_t i = 0; i < N; ++i)
+                ((taggedWord **)Root)[i]->DisambiguateByTagFriends();
+        }
+        if (nice)
+            LOG1LINE("...disambiguated by tag friends");
+    }
+
+    if (nice)
+        LOG1LINE("listing words");
+    if (SortOutput)
+    {
+        if (nice)
+            LOG1LINE("sorting words");
+        if (Root)
+        {
+            if (InputHasTags)
+                qsort(Root, N, sizeof(Word *), cmpTagged);
+            else
+                qsort(Root, N, sizeof(Word *), cmpUntagged);
+            for (size_t i = 0; i < N; ++i)
+                Root[i]->print();
+        }
+    }
+    else
+    {
+        if (nice)
+            LOG1LINE("print Unsorted words");
+        printUnsorted(fpo);
+    }
+    if (nice)
+        LOG1LINE("...listed words");
+
+    if (nice)
+        LOG1LINE("...text processed");
+    delete[] basefrmarrD;
+    delete[] basefrmarrL;
+
+    if (Root)
+    {
+        for (size_t i = 0; i < N; ++i)
+            Root[i]->deleteSecondaryStuff();
+    }
+}
+
 void text::insert(const char *w)
 {
     static char wbuf[1000];

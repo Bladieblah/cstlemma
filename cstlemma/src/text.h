@@ -56,10 +56,6 @@ class field;
 
 class text
 {
-#ifdef COUNTOBJECTS
-public:
-    static int COUNT;
-#endif
 private:
     basefrm **basefrmarrD;
     basefrm **basefrmarrL;
@@ -88,11 +84,7 @@ protected:
 
 private:
     virtual const char *convert(const char *s, char *buf, const char *lastBufByte) = 0;
-    /*{
-    REFER(buf)
-    REFER(lastBufByte)
-    return s;
-    }*/
+
 protected:
     bool atStartOfLine() const { return StartOfLine; }
     void insert(const char *w);
@@ -111,6 +103,7 @@ public:
     }
     static bool setFormat(const char *format, const char *bformat, const char *Bformat, bool InputHasTags);
     void Lemmatise(FILE *fpo, const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, enum caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas);
+    void Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, enum caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas);
 
     text(bool InputHasTags, bool nice);
     virtual void DoYourWork(
@@ -120,16 +113,9 @@ public:
         optionStruct &Option) = 0;
     virtual ~text();
     void createUnTaggedAlternatives(
-#ifndef CONSTSTRCHR
-        const
-#endif
         char *w);
     void createUnTagged(const char *w);
     void createTaggedAlternatives(
-#ifndef CONSTSTRCHR
-        const
-#endif
-
         char *w,
         const char *tag);
     void createTagged(const char *w, const char *tag);

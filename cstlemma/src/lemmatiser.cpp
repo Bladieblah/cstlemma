@@ -903,7 +903,7 @@ int Lemmatiser::LemmatiseString(string str)
     if (Option.nice)
         LOG1LINE("processing");
     
-    Text->Lemmatise(fpout, Option.Sep, tally, Option.SortOutput, Option.UseLemmaFreqForDisambiguation, Option.nice, Option.DictUnique, Option.RulesUnique, Option.baseformsAreLowercase, listLemmas, Option.Wformat != NULL                         // list lemmas with all word forms
+    Text->Lemmatise(Option.Sep, &tally, Option.SortOutput, Option.UseLemmaFreqForDisambiguation, Option.nice, Option.DictUnique, Option.RulesUnique, Option.baseformsAreLowercase, listLemmas, Option.Wformat != NULL                         // list lemmas with all word forms
                                                                                                                                                                                                          && ((listLemmas & 3) == 3)                 // both of -b and -B are specified
                                                                                                                                                                                                          && !strcmp(Option.Bformat, Option.bformat) // -b and -B options are the same format
                                                                                                                                                                                                                                                     // true: outputs must be merged
