@@ -25,16 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "defines.h"
 #if defined PROGLEMMATISE
 
-#if STREAM
-# include <iostream>
-# include <iomanip>
-#include <cstdio>
-# ifndef __BORLANDC__
-using namespace std;
-# endif
-#else
 # include <stdio.h>
-#endif
 
 class Word;
 class taggedWord;

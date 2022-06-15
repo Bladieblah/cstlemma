@@ -29,85 +29,72 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "word.h"
 #include "caseconv.h"
 #endif
-#if STREAM
-# if defined __BORLANDC__
-#  include <strstrea.h>
-# else
-#  ifdef __GNUG__
-#   if __GNUG__ > 2
-#    include <sstream>
-#   else
-#    include <strstream.h>
-#   endif
-#  else
-#   include <sstream>
-#  endif
-# endif
-# ifndef __BORLANDC__
-using namespace std;
-# endif
-#endif
 
 #include <stdio.h>
 #include <stddef.h>
 
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
+{
+    if (argc == 1)
     {
-    if(argc == 1)
-        {
         LOG1LINE("");
         LOG1LINE("CSTLEMMA version " CSTLEMMAVERSION " (" CSTLEMMADATE ")");
         LOG1LINE("Copyright (C) " CSTLEMMACOPYRIGHT);
-        if /*constexpr*/(sizeof(ptrdiff_t) == 8)
+        if (sizeof(ptrdiff_t) == 8)
             LOG1LINE("64-bit");
         else
             LOG1LINE("32-bit");
-// GNU >> 
         LOG1LINE("CSTLEMMA comes with ABSOLUTELY NO WARRANTY; for details use option -w.");
         LOG1LINE("This is free software, and you are welcome to redistribute it under");
         LOG1LINE("certain conditions; use option -r for details.");
         LOG1LINE("");
         LOG1LINE("");
-// << GNU
         LOG1LINE("Use option -h for usage.");
         return 0;
-        }
+    }
 
     optionStruct Option;
     int ret;
+    fprintf(stderr, "Hi\n");
 
-    OptReturnTp optResult = Option.readArgs(argc,argv);
-    if(optResult == OptReturnTp::Error)
+    for (int i = 0; i < argc; i++) {
+        fprintf(stderr, "%d: %s\n", i, argv[i]);
+    }
+
+    OptReturnTp optResult = Option.readArgs(argc, argv);
+    if (optResult == OptReturnTp::Error)
+    {
+        fprintf(stderr, "returning 1\n");
         return 1;
+    }
 
-    if(optResult == OptReturnTp::Leave)
-        { // option -r, -w, -? or -h
+    if (optResult == OptReturnTp::Leave)
+    { // option -r, -w, -? or -h
+        fprintf(stderr, "returning 0\n");
         return 0;
-        }
+    }
 
     Lemmatiser theLemmatiser(Option);
-    if((ret = theLemmatiser.getStatus()) == 0)
+    if ((ret = theLemmatiser.getStatus()) == 0)
+    {
+        fprintf(stderr, "Success\n");
+        switch (Option.whattodo)
         {
-        switch(Option.whattodo)
-            {
-            case whattodoTp::MAKEDICT:
-                {
-                break;
-                }
-            case whattodoTp::MAKEFLEXPATTERNS:
-                {
-                break;
-                }
-            default:
-                {
-#if defined PROGLEMMATISE
-                ret = theLemmatiser.LemmatiseFile();
-#endif
-                }
-            }
+        case whattodoTp::MAKEDICT:
+        {
+            break;
         }
-#if defined PROGLEMMATISE
-    Word::deleteStaticMembers();
-#endif
-    return ret;
+        case whattodoTp::MAKEFLEXPATTERNS:
+        {
+            break;
+        }
+        default:
+        {
+            ret = theLemmatiser.LemmatiseFile();
+        }
+        }
     }
+    fprintf(stderr, "Bye\n");
+    Word::deleteStaticMembers();
+    return ret;
+}

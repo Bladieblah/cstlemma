@@ -32,365 +32,321 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <assert.h>
 #include "hashmap.h"
 
-static hashmap::hash<Word> * Hash = 0;
+static hashmap::hash<Word> *Hash = 0;
 
 #ifdef COUNTOBJECTS
 int text::COUNT = 0;
 #endif
 
-
-int findSlashes(const char * buf)
-    {
-    if(!*buf || *buf == '/')
+int findSlashes(const char *buf)
+{
+    if (!*buf || *buf == '/')
         return 0;
-    const char * p = buf;
+    const char *p = buf;
     int ret = 0;
-    while((p = strchr(p,'/')) != 0)
-        {
+    while ((p = strchr(p, '/')) != 0)
+    {
         ++p;
-        if(*p == '/')
+        if (*p == '/')
             return 0;
         ++ret;
-        }
-    if(ret && buf[strlen(buf + 1)] == '/')
+    }
+    if (ret && buf[strlen(buf + 1)] == '/')
         return 0;
     return ret;
-    }
+}
 
-
-static int cmpBaseforms_twf(const basefrm * n1,const basefrm * n2)
-    {
+static int cmpBaseforms_twf(const basefrm *n1, const basefrm *n2)
+{
     int ret = n1->cmpt(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmps(n2);
     return ret;
-    }
+}
 
-static int cmpBaseforms_w(const basefrm * n1,const basefrm * n2)
-    {
+static int cmpBaseforms_w(const basefrm *n1, const basefrm *n2)
+{
     int ret = n1->cmps(n2);
     return ret;
-    }
+}
 
-static int cmpBaseforms_wf(const basefrm * n1,const basefrm * n2)
-    {
+static int cmpBaseforms_wf(const basefrm *n1, const basefrm *n2)
+{
     int ret = n1->cmps(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmpf(n2);
     return ret;
-    }
+}
 
-static int cmpBaseforms_ftw(const basefrm * n1,const basefrm * n2)
-    {
+static int cmpBaseforms_ftw(const basefrm *n1, const basefrm *n2)
+{
     int ret = n1->cmpf(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmpt(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmps(n2);
     return ret;
-    }
+}
 
-static int cmpBaseforms_fwt(const basefrm * n1,const basefrm * n2)
-    {
+static int cmpBaseforms_fwt(const basefrm *n1, const basefrm *n2)
+{
     int ret = n1->cmpf(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmps(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmpt(n2);
     return ret;
-    }
+}
 
-static int cmpBaseforms_tfw(const basefrm * n1,const basefrm * n2)
-    {
+static int cmpBaseforms_tfw(const basefrm *n1, const basefrm *n2)
+{
     int ret = n1->cmpt(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmpf(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmps(n2);
     return ret;
-    }
+}
 
-static int cmpBaseforms_wft(const basefrm * n1,const basefrm * n2)
-    {
+static int cmpBaseforms_wft(const basefrm *n1, const basefrm *n2)
+{
     int ret = n1->cmps(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmpf(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmpt(n2);
     return ret;
-    }
+}
 
-static int cmpBaseforms_wtf(const basefrm * n1,const basefrm * n2)
-    {
+static int cmpBaseforms_wtf(const basefrm *n1, const basefrm *n2)
+{
     int ret = n1->cmps(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmpt(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmpf(n2);
     return ret;
-    }
+}
 
-static int cmpBaseforms_wt(const basefrm * n1,const basefrm * n2)
-    {
+static int cmpBaseforms_wt(const basefrm *n1, const basefrm *n2)
+{
     int ret = n1->cmps(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmpt(n2);
     return ret;
-    }
+}
 
-static int cmpBaseforms_fw(const basefrm * n1,const basefrm * n2)
-    {
+static int cmpBaseforms_fw(const basefrm *n1, const basefrm *n2)
+{
     int ret = n1->cmpf(n2);
-    if(ret)
+    if (ret)
         return ret;
     ret = n1->cmps(n2);
     return ret;
-    }
+}
 
-static int (*pcmpBaseforms)  (const basefrm * elem1, const basefrm * elem2) = cmpBaseforms_w;
-static int (*pcmpBaseforms_f)(const basefrm * elem1, const basefrm * elem2) = cmpBaseforms_fw;
+static int (*pcmpBaseforms)(const basefrm *elem1, const basefrm *elem2) = cmpBaseforms_w;
+static int (*pcmpBaseforms_f)(const basefrm *elem1, const basefrm *elem2) = cmpBaseforms_fw;
 
-static int compareBaseforms( const void *arg1, const void *arg2 )
-    {
-    const basefrm * n1 = *(const basefrm * const *)arg1;
-    const basefrm * n2 = *(const basefrm * const *)arg2;
-    return pcmpBaseforms(n1,n2);
-    }
+static int compareBaseforms(const void *arg1, const void *arg2)
+{
+    const basefrm *n1 = *(const basefrm *const *)arg1;
+    const basefrm *n2 = *(const basefrm *const *)arg2;
+    return pcmpBaseforms(n1, n2);
+}
 
-static int compareBaseforms_f( const void *arg1, const void *arg2 )
-    {
-    const basefrm * n1 = *(const basefrm * const *)arg1;
-    const basefrm * n2 = *(const basefrm * const *)arg2;
-    if(!n1)
-        if(n2)
+static int compareBaseforms_f(const void *arg1, const void *arg2)
+{
+    const basefrm *n1 = *(const basefrm *const *)arg1;
+    const basefrm *n2 = *(const basefrm *const *)arg2;
+    if (!n1)
+        if (n2)
             return 1;
         else
             return 0;
-    else if(!n2)
+    else if (!n2)
         return -1;
-    return pcmpBaseforms_f(n1,n2);
-    }
+    return pcmpBaseforms_f(n1, n2);
+}
 
-static int sortBaseforms(basefrm ** pbf,int cnt)
-    {
-    qsort((void *)pbf,cnt,sizeof(basefrm *),compareBaseforms);
+static int sortBaseforms(basefrm **pbf, int cnt)
+{
+    qsort((void *)pbf, cnt, sizeof(basefrm *), compareBaseforms);
     int i = 0;
     int j = 1;
     int k = 0;
-//    int deleted = 0;
-    while(j < cnt)
+    while (j < cnt)
+    {
+        if (!pcmpBaseforms(pbf[i], pbf[j])) // 20050826 Error: pcmpBaseforms was cmpBaseforms_w
         {
-        if(!pcmpBaseforms(pbf[i],pbf[j])) // 20050826 Error: pcmpBaseforms was cmpBaseforms_w
-            {
             pbf[j]->getAbsorbedBy(pbf[i]);
             pbf[j] = 0;
-//            ++deleted;
-            }
+        }
         else
+        {
+            if (k != i)
             {
-            if(k != i)
-                {
                 pbf[k] = pbf[i];
                 pbf[i] = 0;
-                }
+            }
             i = j;
             ++k;
-            }
-        ++j;
         }
-    if(k != i)
-        {
+        ++j;
+    }
+    if (k != i)
+    {
         pbf[k] = pbf[i];
         pbf[i] = 0;
-        }
-//    assert(k+1 == cnt - deleted);
-    return k+1;
     }
+    //    assert(k+1 == cnt - deleted);
+    return k + 1;
+}
 
-static void sortBaseforms_f(basefrm ** pbf,int cnt)
-    {
-    qsort((void *)pbf,cnt,sizeof(basefrm *),compareBaseforms_f);
-    }
+static void sortBaseforms_f(basefrm **pbf, int cnt)
+{
+    qsort((void *)pbf, cnt, sizeof(basefrm *), compareBaseforms_f);
+}
 
-void text::AddField(field * fld)
-    {
-    if(fields == 0)
+void text::AddField(field *fld)
+{
+    if (fields == 0)
         fields = fld;
     else
         fields->addField(fld);
-    }
+}
 
-static void invalidFormatString(char * Iformat,char * pformat)
-    {
-#if STREAM
-    cerr << "Invalid format string \"" << Iformat << "\"" << endl;
-    cerr << "                        " << setw((int)(strlen(Iformat) - strlen(pformat))) << "^" << endl;
-#else
-    fprintf(stderr,"Invalid format string \"%s\"\n",Iformat);
-    fprintf(stderr,"                        %*c\n",(int)(strlen(Iformat) - strlen(pformat)),'^');
-#endif
-    }
+static void invalidFormatString(char *Iformat, char *pformat)
+{
+    fprintf(stderr, "Invalid format string \"%s\"\n", Iformat);
+    fprintf(stderr, "                        %*c\n", (int)(strlen(Iformat) - strlen(pformat)), '^');
+}
 
-char * globIformat = 0;
-field * text::translateFormat(char * Iformat,field *& wordfield,field *& tagfield)
-    {
+char *globIformat = 0;
+field *text::translateFormat(char *Iformat, field *&wordfield, field *&tagfield)
+{
     globIformat = Iformat;
     bool escape = false;
     bool afield = false;
-    char * pformat;
-    field * litteral = 0;
-    for(pformat = Iformat;*pformat;++pformat)
+    char *pformat;
+    field *litteral = 0;
+    for (pformat = Iformat; *pformat; ++pformat)
+    {
+        if (afield)
         {
-        if(afield)
-            {
             afield = false;
-            switch(*pformat)
+            switch (*pformat)
+            {
+            case 'w':
+                if (wordfield)
                 {
-                case 'w':
-                    if(wordfield)
-                        {
-                        invalidFormatString(Iformat,pformat);
-                        exit(0);
-                        }
-                    wordfield = new readValue();
-                    litteral = 0;
-                    AddField(wordfield);
-                    break;
-                case 't':
-                    if(tagfield)
-                        {
-                        invalidFormatString(Iformat,pformat);
-                        exit(0);
-                        }
-                    tagfield = new readValue();
-                    litteral = 0;
-                    AddField(tagfield);
-                    break;
-                case 'd':
-                    litteral = 0;
-                    AddField(new readValue());
-                    break;
-                default:
-                    {
-                    invalidFormatString(Iformat,pformat);
+                    invalidFormatString(Iformat, pformat);
                     exit(0);
-                    }
                 }
-            }
-        else if(escape)
-            {
-            escape = false;
-            switch(*pformat)
+                wordfield = new readValue();
+                litteral = 0;
+                AddField(wordfield);
+                break;
+            case 't':
+                if (tagfield)
                 {
-                case 's':
-                    litteral = 0;
-                    AddField(new readWhiteSpace);
-                    break;
-                case 'S':
-                    litteral = 0;
-                    AddField(new readAllButWhiteSpace);
-                    break;
-                case 't':
-                    litteral = 0;
-                    AddField(new readTab);
-                    break;
-                case 'n':
-                    litteral = 0;
-                    AddField(new readNewLine);
-                    break;
-                default:
-                    {
-                    invalidFormatString(Iformat,pformat);
+                    invalidFormatString(Iformat, pformat);
                     exit(0);
-                    }
                 }
-            }
-        else if(*pformat == '\\')
+                tagfield = new readValue();
+                litteral = 0;
+                AddField(tagfield);
+                break;
+            case 'd':
+                litteral = 0;
+                AddField(new readValue());
+                break;
+            default:
             {
-            escape = true;
+                invalidFormatString(Iformat, pformat);
+                exit(0);
             }
-        else if(*pformat == '$')
-            {
-            afield = true;
-            }
-        else
-            {
-            if(!litteral)
-                {
-                litteral = new readLitteral(*pformat);
-                AddField(litteral);
-                }
-            else
-                litteral->add(*pformat);
             }
         }
+        else if (escape)
+        {
+            escape = false;
+            switch (*pformat)
+            {
+            case 's':
+                litteral = 0;
+                AddField(new readWhiteSpace);
+                break;
+            case 'S':
+                litteral = 0;
+                AddField(new readAllButWhiteSpace);
+                break;
+            case 't':
+                litteral = 0;
+                AddField(new readTab);
+                break;
+            case 'n':
+                litteral = 0;
+                AddField(new readNewLine);
+                break;
+            default:
+            {
+                invalidFormatString(Iformat, pformat);
+                exit(0);
+            }
+            }
+        }
+        else if (*pformat == '\\')
+        {
+            escape = true;
+        }
+        else if (*pformat == '$')
+        {
+            afield = true;
+        }
+        else
+        {
+            if (!litteral)
+            {
+                litteral = new readLitteral(*pformat);
+                AddField(litteral);
+            }
+            else
+                litteral->add(*pformat);
+        }
+    }
     return fields;
-    }
+}
 
-
-
-
-
-static int cmpUntagged( const void *arg1, const void *arg2 )
-    {
-    const Word * n1 = *(const Word * const *)arg1;
-    const Word * n2 = *(const Word * const *)arg2;
+static int cmpUntagged(const void *arg1, const void *arg2)
+{
+    const Word *n1 = *(const Word *const *)arg1;
+    const Word *n2 = *(const Word *const *)arg2;
     return (n1->*Word::cmp)(n2);
-    }
+}
 
-static int cmpTagged( const void *arg1, const void *arg2 )
-    {
-    const taggedWord * n1 = *(const taggedWord * const *)arg1;
-    const taggedWord * n2 = *(const taggedWord * const *)arg2;
+static int cmpTagged(const void *arg1, const void *arg2)
+{
+    const taggedWord *n1 = *(const taggedWord *const *)arg1;
+    const taggedWord *n2 = *(const taggedWord *const *)arg2;
     return (n1->*taggedWord::comp)(n2);
-    }
+}
 
-
-
-
-
-
-#if STREAM
-void text::Lemmatise(ostream * fpo
-                    ,const char * Sep
-                    ,tallyStruct * tally
-                    ,unsigned int SortOutput
-                    ,int UseLemmaFreqForDisambiguation
-                    ,bool nice
-                    ,bool DictUnique
-                    ,bool RulesUnique
-                    ,caseTp baseformsAreLowercase
-                    ,int listLemmas
-                    ,bool mergeLemmas
-                    )
-#else
-void text::Lemmatise(FILE * fpo
-                    ,const char * Sep
-                    ,tallyStruct * tally
-                    ,unsigned int SortOutput
-                    ,int UseLemmaFreqForDisambiguation
-                    ,bool nice
-                    ,bool DictUnique
-                    ,bool RulesUnique
-                    ,caseTp baseformsAreLowercase
-                    ,int listLemmas
-                    ,bool mergeLemmas
-                    )
-#endif
-    {
+void text::Lemmatise(FILE *fpo, const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas)
+{
     flex::baseformsAreLowercase = baseformsAreLowercase;
     lext::baseformsAreLowercase = baseformsAreLowercase;
     Word::DictUnique = DictUnique;
@@ -398,321 +354,297 @@ void text::Lemmatise(FILE * fpo
     baseformpointer::UseLemmaFreqForDisambiguation = UseLemmaFreqForDisambiguation;
     taggedWord::sep = Sep;
     basefrm::sep = Sep;
-    if(InputHasTags)
-        {
+    if (InputHasTags)
+    {
         pcmpBaseforms = cmpBaseforms_wt;
-        switch(SortOutput)
-            {
-            case (SORTWORD<<4)+(SORTFREQ<<2)+SORTPOS:
-            case (SORTWORD<<2)+SORTFREQ:
-                pcmpBaseforms_f = cmpBaseforms_wft;
-                taggedWord::comp = &taggedWord::cmp_wft;
-                break;
-            case (SORTWORD<<4)+(SORTPOS<<2)+SORTFREQ:
-            case (SORTWORD<<2)+SORTPOS:
-            case SORTWORD:
-                pcmpBaseforms_f = cmpBaseforms_wtf;
-                taggedWord::comp = &taggedWord::cmp_wtf;
-                break;
-            case (SORTPOS<<4)+(SORTFREQ<<2)+SORTWORD:
-            case (SORTPOS<<2)+SORTFREQ:
-                pcmpBaseforms_f = cmpBaseforms_tfw;
-                taggedWord::comp = &taggedWord::cmp_tfw;
-                break;
-            case (SORTPOS<<4)+(SORTWORD<<2)+SORTFREQ:
-            case (SORTPOS<<2)+SORTWORD:
-                pcmpBaseforms_f = cmpBaseforms_twf;
-                taggedWord::comp = &taggedWord::cmp_twf;
-                break;
-            case (SORTFREQ<<4)+(SORTWORD<<2)+SORTPOS:
-            case (SORTFREQ<<2)+SORTWORD:
-            case SORTFREQ:
-                pcmpBaseforms_f = cmpBaseforms_fwt;
-                taggedWord::comp = &taggedWord::cmp_fwt;
-                break;
-            case (SORTFREQ<<4)+(SORTPOS<<2)+SORTWORD:
-            case (SORTFREQ<<2)+SORTPOS:
-                pcmpBaseforms_f = cmpBaseforms_ftw;
-                taggedWord::comp = &taggedWord::cmp_ftw;
-                break;
-            }
+        switch (SortOutput)
+        {
+        case (SORTWORD << 4) + (SORTFREQ << 2) + SORTPOS:
+        case (SORTWORD << 2) + SORTFREQ:
+            pcmpBaseforms_f = cmpBaseforms_wft;
+            taggedWord::comp = &taggedWord::cmp_wft;
+            break;
+        case (SORTWORD << 4) + (SORTPOS << 2) + SORTFREQ:
+        case (SORTWORD << 2) + SORTPOS:
+        case SORTWORD:
+            pcmpBaseforms_f = cmpBaseforms_wtf;
+            taggedWord::comp = &taggedWord::cmp_wtf;
+            break;
+        case (SORTPOS << 4) + (SORTFREQ << 2) + SORTWORD:
+        case (SORTPOS << 2) + SORTFREQ:
+            pcmpBaseforms_f = cmpBaseforms_tfw;
+            taggedWord::comp = &taggedWord::cmp_tfw;
+            break;
+        case (SORTPOS << 4) + (SORTWORD << 2) + SORTFREQ:
+        case (SORTPOS << 2) + SORTWORD:
+            pcmpBaseforms_f = cmpBaseforms_twf;
+            taggedWord::comp = &taggedWord::cmp_twf;
+            break;
+        case (SORTFREQ << 4) + (SORTWORD << 2) + SORTPOS:
+        case (SORTFREQ << 2) + SORTWORD:
+        case SORTFREQ:
+            pcmpBaseforms_f = cmpBaseforms_fwt;
+            taggedWord::comp = &taggedWord::cmp_fwt;
+            break;
+        case (SORTFREQ << 4) + (SORTPOS << 2) + SORTWORD:
+        case (SORTFREQ << 2) + SORTPOS:
+            pcmpBaseforms_f = cmpBaseforms_ftw;
+            taggedWord::comp = &taggedWord::cmp_ftw;
+            break;
         }
+    }
     else
-        {
+    {
         pcmpBaseforms = cmpBaseforms_w;
-        switch(SortOutput)
-            {
-            case (SORTWORD<<4)+(SORTFREQ<<2)+SORTPOS:
-            case (SORTWORD<<2)+SORTFREQ:
-                pcmpBaseforms_f = cmpBaseforms_wf;
-                Word::cmp = &Word::comp_wf;
-                break;
-            case (SORTWORD<<4)+(SORTPOS<<2)+SORTFREQ:
-            case (SORTWORD<<2)+SORTPOS:
-            case SORTWORD:
-                pcmpBaseforms_f = cmpBaseforms_wf;
-                Word::cmp = &Word::comp_wf;
-                break;
-            case (SORTPOS<<4)+(SORTFREQ<<2)+SORTWORD:
-            case (SORTPOS<<2)+SORTFREQ:
-                pcmpBaseforms_f = cmpBaseforms_fw;
-                Word::cmp = &Word::comp_fw;
-                break;
-            case (SORTPOS<<4)+(SORTWORD<<2)+SORTFREQ:
-            case (SORTPOS<<2)+SORTWORD:
-                pcmpBaseforms_f = cmpBaseforms_wf;
-                Word::cmp = &Word::comp_wf;
-                break;
-            case (SORTFREQ<<4)+(SORTWORD<<2)+SORTPOS:
-            case (SORTFREQ<<2)+SORTWORD:
-            case SORTFREQ:
-                pcmpBaseforms_f = cmpBaseforms_fw;
-                Word::cmp = &Word::comp_fw;
-                break;
-            case (SORTFREQ<<4)+(SORTPOS<<2)+SORTWORD:
-            case (SORTFREQ<<2)+SORTPOS:
-                pcmpBaseforms_f = cmpBaseforms_fw;
-                Word::cmp = &Word::comp_fw;
-                break;
-            default:
-                pcmpBaseforms_f = cmpBaseforms_wf;
-                Word::cmp = &Word::comp_wf;
-                break;
-            }
-        }
-
-//    int cnt = 0;
-    this->aConflict = this->aConflictTypes = this->newcnt = this->newcntTypes = 0;
-    if(tally)
+        switch (SortOutput)
         {
+        case (SORTWORD << 4) + (SORTFREQ << 2) + SORTPOS:
+        case (SORTWORD << 2) + SORTFREQ:
+            pcmpBaseforms_f = cmpBaseforms_wf;
+            Word::cmp = &Word::comp_wf;
+            break;
+        case (SORTWORD << 4) + (SORTPOS << 2) + SORTFREQ:
+        case (SORTWORD << 2) + SORTPOS:
+        case SORTWORD:
+            pcmpBaseforms_f = cmpBaseforms_wf;
+            Word::cmp = &Word::comp_wf;
+            break;
+        case (SORTPOS << 4) + (SORTFREQ << 2) + SORTWORD:
+        case (SORTPOS << 2) + SORTFREQ:
+            pcmpBaseforms_f = cmpBaseforms_fw;
+            Word::cmp = &Word::comp_fw;
+            break;
+        case (SORTPOS << 4) + (SORTWORD << 2) + SORTFREQ:
+        case (SORTPOS << 2) + SORTWORD:
+            pcmpBaseforms_f = cmpBaseforms_wf;
+            Word::cmp = &Word::comp_wf;
+            break;
+        case (SORTFREQ << 4) + (SORTWORD << 2) + SORTPOS:
+        case (SORTFREQ << 2) + SORTWORD:
+        case SORTFREQ:
+            pcmpBaseforms_f = cmpBaseforms_fw;
+            Word::cmp = &Word::comp_fw;
+            break;
+        case (SORTFREQ << 4) + (SORTPOS << 2) + SORTWORD:
+        case (SORTFREQ << 2) + SORTPOS:
+            pcmpBaseforms_f = cmpBaseforms_fw;
+            Word::cmp = &Word::comp_fw;
+            break;
+        default:
+            pcmpBaseforms_f = cmpBaseforms_wf;
+            Word::cmp = &Word::comp_wf;
+            break;
+        }
+    }
+
+    this->aConflict = this->aConflictTypes = this->newcnt = this->newcntTypes = 0;
+    if (tally)
+    {
         tally->totcnt = total;
         tally->totcntTypes = reducedtotal;
-        }
-//    unsigned long int k;
+    }
+
     cntD = 0;
     cntL = 0;
-    if(nice)
+    if (nice)
         LOG1LINE("looking up words");
-    if(Root)
+    if (Root)
+    {
+        for (size_t i = 0; i < N; ++i)
         {
-        for(size_t i = 0;i < N;++i)
-            {
             Root[i]->lookup(this);
-            }
         }
-    if(tally)
-        {
+    }
+    if (tally)
+    {
         tally->newhom = this->aConflict;
         tally->newhomTypes = this->aConflictTypes;
         tally->newcnt = this->newcnt;
         tally->newcntTypes = this->newcntTypes;
-        }
-    if(mergeLemmas)
-        {
-        basefrmarrD = new basefrm * [0];
-        basefrmarrL = new basefrm * [cntL+cntD];
+    }
+    if (mergeLemmas)
+    {
+        basefrmarrD = new basefrm *[0];
+        basefrmarrL = new basefrm *[cntL + cntD];
         ppD = &basefrmarrL[cntL];
         ppL = &basefrmarrL[0];
-        cntL = cntL+cntD;
+        cntL = cntL + cntD;
         cntD = 0;
-        }
+    }
     else
-        {
-        basefrmarrD = new basefrm * [cntD];
-        basefrmarrL = new basefrm * [cntL];
+    {
+        basefrmarrD = new basefrm *[cntD];
+        basefrmarrL = new basefrm *[cntL];
         ppD = &basefrmarrD[0];
         ppL = &basefrmarrL[0];
-        }
-    if(Root)
-        {
-        for(size_t i = 0;i < N;++i)
-            Root[i]->assignTo(this->ppD,this->ppL);
-        }
-    if(mergeLemmas)
-        {
+    }
+    if (Root)
+    {
+        for (size_t i = 0; i < N; ++i)
+            Root[i]->assignTo(this->ppD, this->ppL);
+    }
+    if (mergeLemmas)
+    {
         assert(cntD == 0);
         assert(cntL == ppD - &basefrmarrL[0]);
-        }
+    }
     else
-        {
+    {
         assert(cntD == ppD - &basefrmarrD[0]);
         assert(cntL == ppL - &basefrmarrL[0]);
-        }
-    sortBaseforms(basefrmarrD,cntD);
-    sortBaseforms(basefrmarrL,cntL);
+    }
+    sortBaseforms(basefrmarrD, cntD);
+    sortBaseforms(basefrmarrL, cntL);
 
-    if(UseLemmaFreqForDisambiguation != 2 /*Why?-> && lext::DictUnique*/)
-        {
-        if(nice)
+    if (UseLemmaFreqForDisambiguation != 2 /*Why?-> && lext::DictUnique*/)
+    {
+        if (nice)
             LOG1LINE("disambiguation by lemma frequency");
-        if(Root)
-            {
-            for(size_t i = 0;i < N;++i)
-                Root[i]->DisambiguateByLemmaFrequency();
-            for(size_t i = 0;i < N;++i)
-                Root[i]->decFreq();
-            }
-        if(nice)
-            LOG1LINE("...disambiguated by lemma frequency");
-        }
-    if(TagFriends && InputHasTags)
+        if (Root)
         {
-        if(nice)
-            LOG1LINE("disambiguation by tag friends");
-        if(Root)
-            {
-            for(size_t i = 0;i < N;++i)
-                ((taggedWord**)Root)[i]->DisambiguateByTagFriends();
-            }
-        if(nice)
-            LOG1LINE("...disambiguated by tag friends");
+            for (size_t i = 0; i < N; ++i)
+                Root[i]->DisambiguateByLemmaFrequency();
+            for (size_t i = 0; i < N; ++i)
+                Root[i]->decFreq();
         }
+        if (nice)
+            LOG1LINE("...disambiguated by lemma frequency");
+    }
+    if (TagFriends && InputHasTags)
+    {
+        if (nice)
+            LOG1LINE("disambiguation by tag friends");
+        if (Root)
+        {
+            for (size_t i = 0; i < N; ++i)
+                ((taggedWord **)Root)[i]->DisambiguateByTagFriends();
+        }
+        if (nice)
+            LOG1LINE("...disambiguated by tag friends");
+    }
 
     Word::setFile(fpo);
-//    token::setFile(fpo);
-    if(listLemmas) /* Make a list of lemmas, for each lemma listing all found word forms belonging to the same paradigm. 
-                   Some word forms have ambiguous lemmas. Such word forms are listed under all possible lemmas. 
-                   Lemma frequencies can therefore be too high.
-                   */
+    //    token::setFile(fpo);
+    if (listLemmas) /* Make a list of lemmas, for each lemma listing all found word forms belonging to the same paradigm.
+                    Some word forms have ambiguous lemmas. Such word forms are listed under all possible lemmas.
+                    Lemma frequencies can therefore be too high.
+                    */
+    {
+        if ((pcmpBaseforms_f != cmpBaseforms_wf) && (pcmpBaseforms_f != cmpBaseforms_wtf))
         {
-        if(  (pcmpBaseforms_f != cmpBaseforms_wf)
-          && (pcmpBaseforms_f != cmpBaseforms_wtf)
-          )
-            {
-            sortBaseforms_f(basefrmarrD,cntD);
-            sortBaseforms_f(basefrmarrL,cntL);
-            }
-        if(nice)
+            sortBaseforms_f(basefrmarrD, cntD);
+            sortBaseforms_f(basefrmarrL, cntL);
+        }
+        if (nice)
             LOG1LINE("listing lemmas");
         basefrmarrD[0]->setFile(fpo);
-        if(  (listLemmas & 1)
-          && (listLemmas & 2)
-          )
-            {
+        if ((listLemmas & 1) && (listLemmas & 2))
+        {
             int d = 0;
             int l = 0;
-            while(  (d < cntD)
-                 && basefrmarrD[d] 
-                 && (l < cntL)
-                 && basefrmarrL[l]
-                 )
+            while ((d < cntD) && basefrmarrD[d] && (l < cntL) && basefrmarrL[l])
+            {
+                if (pcmpBaseforms_f(basefrmarrD[d], basefrmarrL[l]) < 0)
                 {
-                if(pcmpBaseforms_f(basefrmarrD[d],basefrmarrL[l]) < 0)
-                    {
-                    if(basefrmarrD[d]->lemmaFreq())
+                    if (basefrmarrD[d]->lemmaFreq())
                         basefrmarrD[d]->printb();
                     d++;
-                    }
+                }
                 else
-                    {
-                    if(basefrmarrL[l]->lemmaFreq())
+                {
+                    if (basefrmarrL[l]->lemmaFreq())
                         basefrmarrL[l]->printB();
                     l++;
-                    }
                 }
-            while(d < cntD && basefrmarrD[d])
-                {
-                if(basefrmarrD[d]->lemmaFreq())
+            }
+            while (d < cntD && basefrmarrD[d])
+            {
+                if (basefrmarrD[d]->lemmaFreq())
                     basefrmarrD[d]->printb();
                 d++;
-                }
-            while(l < cntL && basefrmarrL[l])
-                {
-                if(basefrmarrL[l]->lemmaFreq())
+            }
+            while (l < cntL && basefrmarrL[l])
+            {
+                if (basefrmarrL[l]->lemmaFreq())
                     basefrmarrL[l]->printB();
                 l++;
-                }
             }
-        else if(listLemmas & 1)
-            {
-            for(int K = 0;K < cntD && basefrmarrD[K];++K)
-                basefrmarrD[K]->printb();
-            }
-        else if(listLemmas & 2)
-            {
-            for(int K = 0;K < cntL && basefrmarrL[K];++K)
-                basefrmarrL[K]->printB();
-            }
-        if(nice)
-            LOG1LINE("...listed lemmas");
         }
-    else/* Make a list of word forms, for each word form listing all possible lemmas. */
+        else if (listLemmas & 1)
         {
-    //    unsorted[0]->setFile(fpo);
-        if(nice)
+            for (int K = 0; K < cntD && basefrmarrD[K]; ++K)
+                basefrmarrD[K]->printb();
+        }
+        else if (listLemmas & 2)
+        {
+            for (int K = 0; K < cntL && basefrmarrL[K]; ++K)
+                basefrmarrL[K]->printB();
+        }
+        if (nice)
+            LOG1LINE("...listed lemmas");
+    }
+    else /* Make a list of word forms, for each word form listing all possible lemmas. */
+    {
+        if (nice)
             LOG1LINE("listing words");
-        if(SortOutput)
-            {
-            if(nice)
+        if (SortOutput)
+        {
+            if (nice)
                 LOG1LINE("sorting words");
-            if(Root)
-                {
-                if(InputHasTags)
-                    qsort(Root,N,sizeof(Word *),cmpTagged);
-                else
-                    qsort(Root,N,sizeof(Word *),cmpUntagged);
-                for(size_t i = 0;i < N;++i)
-                    Root[i]->print();
-                }
-            }
-        else 
+            if (Root)
             {
-            if(nice)
+                if (InputHasTags)
+                    qsort(Root, N, sizeof(Word *), cmpTagged);
+                else
+                    qsort(Root, N, sizeof(Word *), cmpUntagged);
+                for (size_t i = 0; i < N; ++i)
+                    Root[i]->print();
+            }
+        }
+        else
+        {
+            if (nice)
                 LOG1LINE("print Unsorted words");
             printUnsorted(fpo);
-            }
-        if(nice)
+        }
+        if (nice)
             LOG1LINE("...listed words");
-        }
-#if 0
-    unsorted[0]->setFile(fpnew);
-    for(k = 0;k < reducedtotal;++k)
-        {
-        u.unTaggedWords[k]->printnew(/*fpnew*/);
-        }
-    unsorted[0]->setFile(fpconflict);
-    for(k = 0;k < reducedtotal;++k)
-        {
-        u.unTaggedWords[k]->printConflict(/*fpconflict*/);
-        }
-#endif
-//    totcnt = k;
-//    return cnt;
-    if(nice)
-        LOG1LINE("...text processed");
-    delete [] basefrmarrD;
-    delete [] basefrmarrL;
-    
-    if(Root)
-        {
-        for(size_t i = 0;i < N;++i)
-            Root[i]->deleteSecondaryStuff();
-        }
     }
 
+    if (nice)
+        LOG1LINE("...text processed");
+    delete[] basefrmarrD;
+    delete[] basefrmarrL;
 
-void text::insert(const char * w)
+    if (Root)
     {
+        for (size_t i = 0; i < N; ++i)
+            Root[i]->deleteSecondaryStuff();
+    }
+}
+
+void text::insert(const char *w)
+{
     static char wbuf[1000];
     w = convert(w, wbuf, wbuf + sizeof(wbuf) - 1);
-    if(!Hash)
-        {
-        Hash = new hashmap::hash<Word>(&Word::itsWord,1000);
-        }
-    void * v;
-    Word * wrd = Hash->find(w,v);
-    if(wrd)
-        {
+    if (!Hash)
+    {
+        Hash = new hashmap::hash<Word>(&Word::itsWord, 1000);
+    }
+    void *v;
+    Word *wrd = Hash->find(w, v);
+    if (wrd)
+    {
         wrd->inc();
-        }
+    }
     else
-        {
+    {
         wrd = new Word(w);
-        Hash->insert(wrd,v);
-        if(StartOfLine)
+        Hash->insert(wrd, v);
+        if (StartOfLine)
             wrd->setSegmentInitial();
-        }
-    if(!StartOfLine)
+    }
+    if (!StartOfLine)
         wrd->unsetSegmentInitial(); /* Signals that the casing of the word has
                                     to be taken into account when lemmatizing.
                                     Segment initial words are almost always
@@ -723,38 +655,35 @@ void text::insert(const char * w)
     tunsorted[total] = wrd;
     Lines[lineno] = total;
     ++total;
-    }
+}
 
-void text::insert(const char * w, const char * tag)
-    {
+void text::insert(const char *w, const char *tag)
+{
     static char wbuf[1000];
     static char tbuf[1000];
-    w = convert(w,wbuf,wbuf+sizeof(wbuf)-1);
-    tag = convert(tag,tbuf,wbuf+sizeof(tbuf)-1);
-    if(!Hash)
-        {
+    w = convert(w, wbuf, wbuf + sizeof(wbuf) - 1);
+    tag = convert(tag, tbuf, wbuf + sizeof(tbuf) - 1);
+    if (!Hash)
+    {
         Hash = (hashmap::hash<Word> *)new hashmap::hash<taggedWord>(&Word::itsWord, 1000);
-        }
-    void * v;
-    taggedWord * wrd;
-    for ( wrd = (taggedWord *)Hash->find(w,v)
-        ; wrd && strcmp(wrd->m_tag,tag)
-        ; wrd = (taggedWord *)Hash->findNext(w,v)
-        )
+    }
+    void *v;
+    taggedWord *wrd;
+    for (wrd = (taggedWord *)Hash->find(w, v); wrd && strcmp(wrd->m_tag, tag); wrd = (taggedWord *)Hash->findNext(w, v))
         ;
 
-    if(wrd)
-        {
+    if (wrd)
+    {
         wrd->inc();
-        }
+    }
     else
-        {
-        wrd = new taggedWord(w,tag);
-        Hash->insert((Word *)wrd,v);
-        if(StartOfLine)
+    {
+        wrd = new taggedWord(w, tag);
+        Hash->insert((Word *)wrd, v);
+        if (StartOfLine)
             wrd->setSegmentInitial();
-        }
-    if(!StartOfLine)
+    }
+    if (!StartOfLine)
         wrd->unsetSegmentInitial(); /* Signals that the casing of the word has
                                     to be taken into account when lemmatizing.
                                     Segment initial words are almost always
@@ -765,112 +694,100 @@ void text::insert(const char * w, const char * tag)
     tunsorted[total] = wrd;
     Lines[lineno] = total;
     ++total;
-    }
+}
 
 void text::createUnTaggedAlternatives(
 #ifndef CONSTSTRCHR
-                                      const 
+    const
 #endif
-                                      char * w
-                                      )
+    char *w)
+{
+    while (w && *w)
     {
-    while(w && *w)
-        {
-        char * slash = strchr(w,'/');
-        if(slash)
+        char *slash = strchr(w, '/');
+        if (slash)
             *slash = '\0';
         insert(w);
-        if(slash)
-            {
+        if (slash)
+        {
             *slash = '/';
             w = slash + 1;
-            }
+        }
         else
             w = 0;
-        }
     }
+}
 
-void text::createUnTagged(const char * w)
+void text::createUnTagged(const char *w)
+{
+    if (*w)
     {
-    if(*w)
-        {
         insert(w);
-        }
     }
+}
 
 void text::createTaggedAlternatives(
 #ifndef CONSTSTRCHR
-                                    const 
+    const
 #endif
-                                    char * w, const char * tag
-                                    )
+    char *w,
+    const char *tag)
+{
+    while (w && *w)
     {
-    while(w && *w)
+        char *slash = strchr(w, '/');
+        if (slash)
         {
-        char * slash = strchr(w,'/');
-        if(slash)
-            {
             *slash = '\0';
-            }
+        }
         insert(w, tag);
-        if(slash)
-            {
+        if (slash)
+        {
             *slash = '/';
             w = slash + 1;
-            }
+        }
         else
             w = 0;
-        }
     }
+}
 
-void text::createTagged(const char * w, const char * tag)
-    {
+void text::createTagged(const char *w, const char *tag)
+{
     insert(w, tag);
-    }
+}
 
+text::text(bool a_InputHasTags, bool nice)
+    : Root(0), lineno(0), total(0), reducedtotal(0), fields(0), basefrmarrD(0), basefrmarrL(0), InputHasTags(a_InputHasTags)
 
-
-text::text(bool a_InputHasTags,bool nice)
-           :Root(0)
-           ,lineno(0)
-           ,total(0)
-           ,reducedtotal(0)
-           ,fields(0)
-           ,basefrmarrD(0)
-           ,basefrmarrL(0)
-           ,InputHasTags(a_InputHasTags)
-           
-    {
+{
 #ifdef COUNTOBJECTS
     ++COUNT;
 #endif
-    if(nice)
+    if (nice)
         LOG1LINE("counting words");
-    }
+}
 
-
-    
 text::~text()
-    {
+{
     delete fields;
     delete Root;
 #ifdef COUNTOBJECTS
     --COUNT;
 #endif
-    }
+}
 
-bool text::setFormat(const char * cformat,const char * bformat,const char * Bformat,bool a_InputHasTags)
-    {
-    return Word::setFormat(cformat,bformat,Bformat,a_InputHasTags);
-    }
+bool text::setFormat(const char *cformat, const char *bformat, const char *Bformat, bool a_InputHasTags)
+{
+    return Word::setFormat(cformat, bformat, Bformat, a_InputHasTags);
+}
 
 void text::makeList()
+{
+    if (Hash)
     {
-    if(Hash)
-        {
         Root = Hash->convertToList(N);
         delete Hash;
         Hash = NULL;
-        }
     }
+}
 #endif
