@@ -45,30 +45,6 @@ class functionTree
         int m_nmbr;      // number of OutputClass elements (success/failure criterion)
         bool Hidden;
     public:
-        /*
-        void print()
-            {
-            if(fnc)
-                printf("F");
-            if(child)
-                {
-                printf("[");
-                child->print();
-                printf("]");
-                switch(comp)
-                    {
-                    case less:printf("<%d",nmbr);break;
-                    case equal:printf("%d",nmbr);break;
-                    case notequal:printf("~%d",nmbr);break;
-                    case more:printf(">%d",nmbr);break;
-                    case any:printf("*");break;
-                    case test:printf("");break;
-                    }
-                }
-            if(next)
-                next->print();
-            }
-            */
         functionTree();
         ~functionTree();
         void hide(){Hidden=true;}

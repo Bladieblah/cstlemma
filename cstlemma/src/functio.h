@@ -25,14 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "defines.h"
 #if defined PROGLEMMATISE
 
-#if STREAM
-# include <iostream>
-# ifndef __BORLANDC__     // Borland 5.02
-using namespace std;
-# endif
-#else
-# include <stdio.h>
-#endif
+#include <stdio.h>
+#include <string>
 
 class OutputClass;
 class basefrm;
@@ -46,156 +40,141 @@ typedef int (Word::*fptcount)() const;
 typedef int (basefrm::*fptcountbf)() const;
 
 class formattingFunction
+{
+public:
+    virtual void doIt(const OutputClass *outputObj) const = 0;
+    virtual std::string toString(const OutputClass *outputObj);
+    virtual int count(const OutputClass *outputObj) const
     {
-#ifdef COUNTOBJECTS
-    public:
-        static int COUNT;
-#endif
-    private:
-    public:
-        virtual void doIt(const OutputClass * outputObj)const = 0;
-        virtual int count(const OutputClass * outputObj)const{REFER(outputObj) return -1;}
-#ifdef COUNTOBJECTS
-        formattingFunction()
-            {
-            ++COUNT;
-            }
-#endif
-        virtual ~formattingFunction()
-            {
-#ifdef COUNTOBJECTS
-            --COUNT;
-#endif
-            }
-        virtual bool skip(const basefrm * bf)const = 0;
-    };
-
+        REFER(outputObj)
+        return -1;
+    }
+    virtual ~formattingFunction()
+    {}
+    virtual bool skip(const basefrm *bf) const = 0;
+};
 
 class functionNoArgB : public formattingFunction
+{
+private:
+    fptrbf m_fn;
+
+public:
+    functionNoArgB(fptrbf fn) : m_fn(fn) {}
+    void doIt(const OutputClass *outputObj) const
     {
-    private:
-        fptrbf m_fn;
-    public:
-        functionNoArgB(fptrbf fn):m_fn(fn){}
-        void doIt(const OutputClass * outputObj)const
-            {
-            (((const basefrm*)outputObj)->*m_fn)();
-            }
-        virtual bool skip(const basefrm * bf)const
-            {
-            REFER(bf)
-            return false;
-            }
-    };
+        (((const basefrm *)outputObj)->*m_fn)();
+    }
+    virtual bool skip(const basefrm *bf) const
+    {
+        REFER(bf)
+        return false;
+    }
+};
 
 class functionString : public formattingFunction
+{
+private:
+    char *arg;
+
+public:
+    static FILE *fp;
+
+    functionString(char *arg);
+    ~functionString()
     {
-    private:
-        char * arg;
-    public:
-#if STREAM
-        static ostream * fp;
-#else
-        static FILE * fp;
-#endif
-        functionString(char * arg);
-        ~functionString()
-            {
-            delete [] arg;
-            }
-        void doIt(const OutputClass * outputObj)const
-            {
-            REFER(outputObj)
-#if STREAM
-            *fp << arg;
-#else
-            for(char * s = arg;*s;++s)
-                fputc(*s,fp);
-#endif
-            }
-        virtual bool skip(const basefrm * bf)const
-            {
-            REFER(bf)
-            return false;
-            }
-    };
+        delete[] arg;
+    }
+    void doIt(const OutputClass *outputObj) const
+    {
+        REFER(outputObj)
+        for (char *s = arg; *s; ++s)
+            fputc(*s, fp);
+    }
+    virtual bool skip(const basefrm *bf) const
+    {
+        REFER(bf)
+        return false;
+    }
+};
 
 class functionNoArg : public formattingFunction
+{
+private:
+    fptr m_fn;
+    fptcount m_fncount;
+
+public:
+    functionNoArg(fptr fn, fptcount fncount) : m_fn(fn), m_fncount(fncount) {}
+    void doIt(const OutputClass *u) const
     {
-    private:
-        fptr m_fn;
-        fptcount m_fncount;
-    public:
-        functionNoArg(fptr fn,fptcount fncount):m_fn(fn),m_fncount(fncount){}
-        void doIt(const OutputClass  * u)const
-            {
-            const Word * tmp = (const Word*)u;
-            (tmp->*m_fn)();
-            }
-        virtual bool skip(const basefrm * bf)const
-            {
-            REFER(bf)
-            return false;
-            }
-        int count(const OutputClass  * u)const
-            {
-            if(m_fncount)
-                {
-                const Word * tmp = (const Word*)u;
-                return (tmp->*m_fncount)();
-                }
-            else
-                return formattingFunction::count(u);
-            }
-    };
+        const Word *tmp = (const Word *)u;
+        (tmp->*m_fn)();
+    }
+    virtual bool skip(const basefrm *bf) const
+    {
+        REFER(bf)
+        return false;
+    }
+    int count(const OutputClass *u) const
+    {
+        if (m_fncount)
+        {
+            const Word *tmp = (const Word *)u;
+            return (tmp->*m_fncount)();
+        }
+        else
+            return formattingFunction::count(u);
+    }
+};
 
 class functionNoArgW : public formattingFunction
-    {
-    private:
-        fptrbf m_fn;
-        fptcountbf m_fncount;
-    public:
-        functionNoArgW(fptrbf fn,fptcountbf fncount):m_fn(fn),m_fncount(fncount){}
-        void doIt(const OutputClass  * u)const
-            {
-            const basefrm * tmp = (const basefrm*)u;
-            (tmp->*m_fn)();
-            }
-        virtual bool skip(const basefrm * bf)const
-            {
-            REFER(bf)
-            return false;
-            }
-        int count(const OutputClass * u)const
-            {
-            if(m_fncount)
-                {
-                const basefrm * tmp = (const basefrm*)u;
-                return (tmp->*m_fncount)();
-                }
-            else
-                return formattingFunction::count(u);
-            }
-    };
+{
+private:
+    fptrbf m_fn;
+    fptcountbf m_fncount;
 
+public:
+    functionNoArgW(fptrbf fn, fptcountbf fncount) : m_fn(fn), m_fncount(fncount) {}
+    void doIt(const OutputClass *u) const
+    {
+        const basefrm *tmp = (const basefrm *)u;
+        (tmp->*m_fn)();
+    }
+    virtual bool skip(const basefrm *bf) const
+    {
+        REFER(bf)
+        return false;
+    }
+    int count(const OutputClass *u) const
+    {
+        if (m_fncount)
+        {
+            const basefrm *tmp = (const basefrm *)u;
+            return (tmp->*m_fncount)();
+        }
+        else
+            return formattingFunction::count(u);
+    }
+};
 
 class functionNoArgT : public formattingFunction
-    {
-    private:
-        fptrt m_fn;
-    public:
-        functionNoArgT(fptrt fn):m_fn(fn){}
-        void doIt(const OutputClass  * u)const
-            {
-            ((const taggedWord*)u->*m_fn)();
-            }
-        virtual bool skip(const basefrm * bf)const
-            {
-            REFER(bf)
-            return false;
-            }
-    };
+{
+private:
+    fptrt m_fn;
 
+public:
+    functionNoArgT(fptrt fn) : m_fn(fn) {}
+    void doIt(const OutputClass *u) const
+    {
+        ((const taggedWord *)u->*m_fn)();
+    }
+    virtual bool skip(const basefrm *bf) const
+    {
+        REFER(bf)
+        return false;
+    }
+};
 
 #endif
 #endif

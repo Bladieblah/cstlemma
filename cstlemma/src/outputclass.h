@@ -38,21 +38,11 @@ typedef formattingFunction * (*getFunction)(int kar,bool & SortInput,int & testT
 class OutputClass
     {
 #if defined PROGLEMMATISE
-#ifdef COUNTOBJECTS
-    public:
-        static int COUNT;
-        OutputClass()
-            {
-            ++COUNT;
-            }
-#endif
     public:
         virtual ~OutputClass()
             {
-#ifdef COUNTOBJECTS
-            --COUNT;
-#endif
-            } // it is important to have at least one virtual 
+            } 
+        // it is important to have at least one virtual 
         //function. Otherwise OutputClass isn't polymorphic and pointers are not 
         //correctly downcasted.
         static const char * Format(const char * format,getFunction gfnc,functionTree & tree,const char * allFormat,bool & SortInput,int & testType);

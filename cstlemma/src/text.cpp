@@ -780,7 +780,7 @@ void text::Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutpu
     {
         if (nice)
             LOG1LINE("print Unsorted words");
-        printUnsorted(fpo);
+        // printUnsorted(fpo);
     }
     if (nice)
         LOG1LINE("...listed words");
