@@ -55,29 +55,21 @@ int main(int argc, char *argv[])
 
     optionStruct Option;
     int ret;
-    fprintf(stderr, "Hi\n");
-
-    for (int i = 0; i < argc; i++) {
-        fprintf(stderr, "%d: %s\n", i, argv[i]);
-    }
 
     OptReturnTp optResult = Option.readArgs(argc, argv);
     if (optResult == OptReturnTp::Error)
     {
-        fprintf(stderr, "returning 1\n");
         return 1;
     }
 
     if (optResult == OptReturnTp::Leave)
     { // option -r, -w, -? or -h
-        fprintf(stderr, "returning 0\n");
         return 0;
     }
 
     Lemmatiser theLemmatiser(Option);
     if ((ret = theLemmatiser.getStatus()) == 0)
     {
-        fprintf(stderr, "Success\n");
         switch (Option.whattodo)
         {
         case whattodoTp::MAKEDICT:
@@ -94,7 +86,6 @@ int main(int argc, char *argv[])
         }
         }
     }
-    fprintf(stderr, "Bye\n");
     Word::deleteStaticMembers();
     return ret;
 }

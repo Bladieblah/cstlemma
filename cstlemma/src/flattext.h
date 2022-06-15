@@ -23,59 +23,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define FLATTEXT_H
 
 #include "text.h"
+#include <string>
 #if defined PROGLEMMATISE
 
 class flattext : public text
-    {
-    private:
-/*
-        unsigned long int * Lines;
-        unsigned long int lineno;
-*/
-    public:
-        flattext(
-#if STREAM
-            istream * fpi
-#else
-            FILE * fpi
-#endif
-            ,bool InputHasTags
-            ,char * Iformat
-            ,int keepPunctuation
-            ,bool nice
-            ,unsigned long int size
-            ,bool treatSlashAsAlternativeSeparator
-            /*
-            ,bool XML
-            ,const char * ancestor // if not null, restrict lemmatisation to elements that are offspring of ancestor
-            ,const char * element // if null, analyse all PCDATA that is text
-            ,const char * wordAttribute // if null, word is PCDATA
-            ,const char * POSAttribute // if null, POS is PCDATA
-            ,const char * lemmaAttribute // if null, Lemma is PCDATA
-            ,const char * lemmaClassAttribute // if null, lemma class is PCDATA
-            */
-            );
-        ~flattext(){}
-        virtual const char* convert(const char* s, char* buf, const char* lastBufByte);
-        virtual void DoYourWork(
-#if STREAM
-            istream* fpi
-#else
-            FILE* fpi
-#endif
-            , optionStruct& Option
-        ) {};
+{
+public:
+    flattext(
+        FILE *fpi, bool InputHasTags, char *Iformat, int keepPunctuation, bool nice, unsigned long int size, bool treatSlashAsAlternativeSeparator);
+    flattext(
+        std::string str, int keepPunctuation, bool nice, unsigned long int size, bool treatSlashAsAlternativeSeparator);
+    ~flattext() {}
+    virtual const char *convert(const char *s, char *buf, const char *lastBufByte);
+    virtual void DoYourWork(
+        FILE *fpi, optionStruct &Option){};
 
-        virtual void printUnsorted(
-#if STREAM
-            ostream * fpo
-#else
-            FILE * fpo            
-#endif
-            );
-            
-    };
-
+    virtual void printUnsorted(
+        FILE *fpo);
+};
 
 #endif
 #endif

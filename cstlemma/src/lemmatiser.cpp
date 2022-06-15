@@ -35,8 +35,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <io.h>
 #endif
 #include <stdarg.h>
+#include <string>
 #include <time.h>
 #include <limits.h>
+
+using namespace std;
 
 int Lemmatiser::instance = 0;
 
@@ -45,8 +48,8 @@ tagpairs *Lemmatiser::TextToDictTags = 0;
 
 static int info(const char *fmt, ...)
 {
-    if (DoInfo)
-    {
+    // if (DoInfo)
+    // {
         int ret;
         va_list ap;
         va_start(ap, fmt);
@@ -54,7 +57,7 @@ static int info(const char *fmt, ...)
         va_end(ap);
         LOG1LINE("");
         return ret;
-    }
+    // }
     return 0;
 }
 
@@ -776,6 +779,7 @@ int Lemmatiser::LemmatiseFile()
 {
     if (Option.XML && !Option.Iformat)
     {
+        fprintf(stderr, "file block 1\n");
         // 20140224
         // Set default for input format
         if (Option.InputHasTags && !Option.POSAttribute)
@@ -884,6 +888,27 @@ int Lemmatiser::LemmatiseFile()
              "unknown types  %10.lu (%lu%%)\n"
              "conflicting    %10.lu (%lu%%)",
              tally.totcntTypes, tally.newcntTypes, tally.totcntTypes ? (tally.newcntTypes * 200 + 1) / (2 * tally.totcntTypes) : 100UL, tally.newhomTypes, tally.totcntTypes ? (tally.newhomTypes * 200 + 1) / (2 * tally.totcntTypes) : 100UL);
+
+    return 0;
+}
+
+int Lemmatiser::LemmatiseString(string str)
+{
+    tallyStruct tally;
+
+    text *Text;
+
+    Text = new flattext(str, Option.keepPunctuation, Option.nice, Option.size, Option.treatSlashAsAlternativesSeparator);
+    
+    if (Option.nice)
+        LOG1LINE("processing");
+    
+    Text->Lemmatise(fpout, Option.Sep, tally, Option.SortOutput, Option.UseLemmaFreqForDisambiguation, Option.nice, Option.DictUnique, Option.RulesUnique, Option.baseformsAreLowercase, listLemmas, Option.Wformat != NULL                         // list lemmas with all word forms
+                                                                                                                                                                                                         && ((listLemmas & 3) == 3)                 // both of -b and -B are specified
+                                                                                                                                                                                                         && !strcmp(Option.Bformat, Option.bformat) // -b and -B options are the same format
+                                                                                                                                                                                                                                                    // true: outputs must be merged
+    );
+    delete Text;
 
     return 0;
 }

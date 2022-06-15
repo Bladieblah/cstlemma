@@ -70,7 +70,6 @@ char * dupl(const char * s)
 
 optionStruct::optionStruct()
     {
-#if defined PROGLEMMATISE
     defaultbformat = true;
     defaultBformat = true;
     defaultCformat = true;
@@ -86,26 +85,18 @@ optionStruct::optionStruct()
     lemmaAttribute = NULL; // if null, Lemma is PCDATA
     lemmaClassAttribute = NULL; // if null, lemma class is PCDATA
     z = NULL;
-#endif
-#if (defined PROGLEMMATISE) || (defined PROGMAKESUFFIXFLEX)
     flx = NULL;
-#endif
-#if defined PROGLEMMATISE
-    InputHasTags = false;//true;
+    InputHasTags = false;
     keepPunctuation = 1;
     Sep = dupl(DefaultSep);
-#endif
     whattodo = whattodoTp::LEMMATISE;
     argi = NULL;
     argo = NULL;
     arge = NULL;
     cformat = NULL;//dupl(DefaultCFormat);
     nice = false;
-#if defined PROGMAKEDICT
     CollapseHomographs = true;
     freq = NULL;
-#endif
-#if defined PROGLEMMATISE
     Wformat = NULL;
     bformat = NULL;//dupl(Default_b_format);
     Bformat = NULL;//dupl(Default_B_format);
@@ -118,14 +109,8 @@ optionStruct::optionStruct()
     baseformsAreLowercase = caseTp::easis;
     size = ULONG_MAX;
     treatSlashAsAlternativesSeparator = false;
-#endif
-#ifdef COUNTOBJECTS
-    ++COUNT;
-#endif
-#if defined PROGMAKESUFFIXFLEX
     showRefcount = false;
     CutoffRefcount = 0;
-#endif
     }
 
 optionStruct::~optionStruct()

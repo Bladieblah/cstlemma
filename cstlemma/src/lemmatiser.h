@@ -24,13 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "dictionary.h"
 #endif
 
-
-#if STREAM
-# include <iostream>
-# ifndef __BORLANDC__
-using namespace std;
-# endif
-#endif
+#include <string>
 
 #if defined PROGLEMMATISE
 class tagpairs;
@@ -40,47 +34,46 @@ struct optionStruct;
 struct tallyStruct;
 
 class Lemmatiser
-    {
-    private:
-        Lemmatiser& operator= (const Lemmatiser& f)
-            {
-            REFER(f) // unused
-            return *this;
-            }
+{
+private:
+        Lemmatiser &operator=(const Lemmatiser &f)
+        {
+                REFER(f) // unused
+                return *this;
+        }
 #ifdef COUNTOBJECTS
-    public:
+public:
         static int COUNT;
 #endif
-    private:
+private:
         static int instance;
 #if (defined PROGLEMMATISE)
         dictionary dict;
-        static tagpairs * TextToDictTags;
+        static tagpairs *TextToDictTags;
 #endif
-        optionStruct & Option;
+        optionStruct &Option;
         int listLemmas;
         int status;
         bool SortInput; // derived from other options
         bool changed;
-    public:
+
+public:
         int getStatus()
-            {
-            return status;
-            }
-        Lemmatiser(optionStruct & Option);
+        {
+                return status;
+        }
+        Lemmatiser(optionStruct &Option);
         ~Lemmatiser();
 #if defined PROGLEMMATISE
-        static const char * translate(const char * tag);
+        static const char *translate(const char *tag);
         int setFormats();
         int openFiles();
         void showSwitches();
-#if STREAM
-        void LemmatiseText(istream * fpin,ostream * fpout,tallyStruct * tally);
-#else
-        void LemmatiseText(FILE * fpin,FILE * fpout,tallyStruct * tally);
-#endif
+        void LemmatiseText(FILE *fpin, FILE *fpout, tallyStruct *tally);
+
         int LemmatiseFile();
         int LemmatiseInit();
+        int LemmatiseString(std::string str);
         void LemmatiseEnd();
 #endif
 #if defined PROGMAKEDICT
@@ -89,5 +82,4 @@ class Lemmatiser
 #if defined PROGMAKESUFFIXFLEX
         int MakeFlexPatterns();
 #endif
-    };
-
+};

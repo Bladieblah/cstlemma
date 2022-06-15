@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "defines.h"
 #if defined PROGLEMMATISE
 
-# include <stdio.h>
+#include <stdio.h>
 
 class Word;
 class taggedWord;
@@ -34,7 +34,7 @@ struct optionStruct;
 enum class caseTp;
 
 struct tallyStruct
-    {
+{
     unsigned long int totcnt;
     unsigned long int totcntTypes;
     unsigned long int newcnt;
@@ -42,135 +42,106 @@ struct tallyStruct
     unsigned long int newhom;
     unsigned long int newhomTypes;
     tallyStruct()
-        {
+    {
         totcnt = 0;
         totcntTypes = 0;
         newcnt = 0;
         newcntTypes = 0;
         newhom = 0;
         newhomTypes = 0;
-        }
-    };
+    }
+};
 
 class field;
 
-
-class text      
-    {
+class text
+{
 #ifdef COUNTOBJECTS
-    public:
-        static int COUNT;
+public:
+    static int COUNT;
 #endif
-    private:
-        basefrm ** basefrmarrD;
-        basefrm ** basefrmarrL;
-    public:
-        basefrm ** ppD;
-        basefrm ** ppL;
-        int cntD;
-        int cntL;
-        int newcnt;
-        int newcntTypes;
-        int aConflict;
-        int aConflictTypes;
-    protected:
-        Word ** Root;
-        const Word ** tunsorted;
-        unsigned long int * Lines;
-        field * fields;
-        size_t N;
-        unsigned long int lineno;
-        unsigned long int total;
-        unsigned long int reducedtotal;
-        bool InputHasTags;
-        bool StartOfLine;
-    private:
-        virtual const char* convert(const char* s, char* buf, const char* lastBufByte) = 0;
-            /*{
-            REFER(buf)
-            REFER(lastBufByte)
-            return s;
-            }*/
-    protected:
-        bool atStartOfLine() const { return StartOfLine; }
-        void insert(const char * w);
-        void insert(const char * w, const char * tag);
-        void AddField(field * fld);
-        field * translateFormat(char * Iformat, field *& wordfield, field *& tagfield);
-    public:
-        void incTotal()
-            {
-            ++total;
-            }
-        void incTotal(unsigned long int inc)
-            {
-            total += inc;
-            }
-        static bool setFormat(const char * format,const char * bformat,const char * Bformat,bool InputHasTags);
-#if STREAM
-        void Lemmatise
-            (ostream * fpo
-            ,const char * Sep
-            ,tallyStruct * tally
-            ,unsigned int SortOutput
-            ,int UseLemmaFreqForDisambiguation
-            ,bool nice
-            ,bool DictUnique
-            ,bool RulesUnique
-            ,caseTp baseformsAreLowercase
-            ,int listLemmas
-            ,bool mergeLemmas
-            );
-#else
-        void Lemmatise
-            (FILE * fpo
-            ,const char * Sep
-            ,tallyStruct * tally
-            ,unsigned int SortOutput
-            ,int UseLemmaFreqForDisambiguation
-            ,bool nice
-            ,bool DictUnique
-            ,bool RulesUnique
-            ,enum caseTp baseformsAreLowercase
-            ,int listLemmas
-            ,bool mergeLemmas
-            );
+private:
+    basefrm **basefrmarrD;
+    basefrm **basefrmarrL;
+
+public:
+    basefrm **ppD;
+    basefrm **ppL;
+    int cntD;
+    int cntL;
+    int newcnt;
+    int newcntTypes;
+    int aConflict;
+    int aConflictTypes;
+
+protected:
+    Word **Root;
+    const Word **tunsorted;
+    unsigned long int *Lines;
+    field *fields;
+    size_t N;
+    unsigned long int lineno;
+    unsigned long int total;
+    unsigned long int reducedtotal;
+    bool InputHasTags;
+    bool StartOfLine;
+
+private:
+    virtual const char *convert(const char *s, char *buf, const char *lastBufByte) = 0;
+    /*{
+    REFER(buf)
+    REFER(lastBufByte)
+    return s;
+    }*/
+protected:
+    bool atStartOfLine() const { return StartOfLine; }
+    void insert(const char *w);
+    void insert(const char *w, const char *tag);
+    void AddField(field *fld);
+    field *translateFormat(char *Iformat, field *&wordfield, field *&tagfield);
+
+public:
+    void incTotal()
+    {
+        ++total;
+    }
+    void incTotal(unsigned long int inc)
+    {
+        total += inc;
+    }
+    static bool setFormat(const char *format, const char *bformat, const char *Bformat, bool InputHasTags);
+    void Lemmatise(FILE *fpo, const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, enum caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas);
+
+    text(bool InputHasTags, bool nice);
+    virtual void DoYourWork(
+        FILE *fpi
+
+        ,
+        optionStruct &Option) = 0;
+    virtual ~text();
+    void createUnTaggedAlternatives(
+#ifndef CONSTSTRCHR
+        const
 #endif
-        text(bool InputHasTags,bool nice);
-        virtual void DoYourWork(
-#if STREAM
-            istream* fpi
-#else
-            FILE* fpi
+        char *w);
+    void createUnTagged(const char *w);
+    void createTaggedAlternatives(
+#ifndef CONSTSTRCHR
+        const
 #endif
-            , optionStruct& Option
+
+        char *w,
+        const char *tag);
+    void createTagged(const char *w, const char *tag);
+    virtual void printUnsorted(
+        FILE *fpo
+
         ) = 0;
-        virtual ~text();
-        void createUnTaggedAlternatives(
-#ifndef CONSTSTRCHR
-            const 
-#endif
-            char * w);
-        void createUnTagged(const char * w);
-        void createTaggedAlternatives(
-#ifndef CONSTSTRCHR
-            const 
-#endif
+    void makeList();
+};
 
-            char * w, const char * tag);
-        void createTagged(const char * w, const char * tag);
-        virtual void printUnsorted(
-#if STREAM
-            ostream * fpo
-#else
-            FILE * fpo            
-#endif
-            ) = 0;
-        void makeList();
-    };
-
-extern char * globIformat;
-extern int findSlashes(const char * buf);
+extern char *globIformat;
+extern int findSlashes(const char *buf);
 
 #endif
 #endif
