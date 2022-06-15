@@ -1,0 +1,9 @@
+[submodule "parsesgml"]
+	path = parsesgml
+	url = https://github.com/kuhumcst/parsesgml
+[submodule "letterfunc"]
+	path = letterfunc
+	url = https://github.com/kuhumcst/letterfunc
+[submodule "hashmap"]
+	path = hashmap
+	url = https://github.com/kuhumcst/hashmap
