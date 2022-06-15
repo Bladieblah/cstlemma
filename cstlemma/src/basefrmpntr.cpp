@@ -29,398 +29,384 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 int baseformpointer::COUNT = 0;
 #endif
 
-
 int baseformpointer::UseLemmaFreqForDisambiguation = 0;
 
 void baseformpointer::testPrint()
-    {
-    if(bf)
+{
+    if (bf)
         bf->testPrint();
-    if(next)
-        {
-#if STREAM
-        cout << "||";
-#else
+    if (next)
+    {
         printf("||");
-#endif
+
         next->testPrint();
-        }
     }
+}
 
 #if FREQ24
-baseformpointer::baseformpointer(const char * s, const char * t, size_t len,/*int cnt,*/unsigned int frequency) :owning(true), next(NULL), hidden(false)
-    {
-    bf = new basefrm(s, t, *this, len,/*cnt,*/frequency);
+baseformpointer::baseformpointer(const char *s, const char *t, size_t len, /*int cnt,*/ unsigned int frequency) : owning(true), next(NULL), hidden(false)
+{
+    bf = new basefrm(s, t, *this, len, /*cnt,*/ frequency);
 #ifdef COUNTOBJECTS
     ++COUNT;
 #endif
-    }
+}
 #else
 #if PFRQ
-baseformpointer::baseformpointer(const char * s, const char * t, size_t len,/*int cnt,*/unsigned int frequency)
-    :owning(true), next(NULL), hidden(false), pfrq(frequency)
-    {
+baseformpointer::baseformpointer(const char *s, const char *t, size_t len, /*int cnt,*/ unsigned int frequency)
+    : owning(true), next(NULL), hidden(false), pfrq(frequency)
+{
     bf = new basefrm(s, t, *this, len);
 #ifdef COUNTOBJECTS
     ++COUNT;
 #endif
-    }
+}
 #else
-baseformpointer::baseformpointer(const char * s, const char * t, size_t len) :owning(true), next(NULL), hidden(false)
-    {
+baseformpointer::baseformpointer(const char *s, const char *t, size_t len) : owning(true), next(NULL), hidden(false)
+{
     bf = new basefrm(s, t, *this, len);
 #ifdef COUNTOBJECTS
     ++COUNT;
 #endif
-    }
+}
 #endif
 #endif
 
 baseformpointer::~baseformpointer()
+{
+    if (owning)
     {
-    if(owning)
-        {
         delete bf;
         bf = NULL;
-        }
+    }
     delete next;
 #ifdef COUNTOBJECTS
     --COUNT;
 #endif
-    }
+}
 
-bool baseformpointer::hasDuplicateLemma(baseformpointer * startOfList, baseformpointer * current)
-    {
-    baseformpointer * bfp2 = startOfList;
+bool baseformpointer::hasDuplicateLemma(baseformpointer *startOfList, baseformpointer *current)
+{
+    baseformpointer *bfp2 = startOfList;
     while (bfp2 != current && bfp2->bf->cmps(current->bf))
-        {
+    {
         bfp2 = bfp2->next;
-        }
+    }
     if (bfp2 == current)
-        {
+    {
         if (current->hidden)
-            {
+        {
             bfp2 = bfp2->next;
             while (bfp2 && (bfp2->hidden || bfp2->bf->cmps(current->bf)))
-                {
+            {
                 bfp2 = bfp2->next;
-                }
+            }
             if (!bfp2) /*Lemma was not shown earlier.*/
                 return false;
-            }
+        }
         else
             return false;
-        }
-    return true;
     }
+    return true;
+}
 
-#if STREAM
-void baseformpointer::printFn(ostream *fp,bfn Fn,const char * sep)
-#else
-void baseformpointer::printFn(FILE *fp,bfn Fn,const char * sep)
-#endif
-    {
+void baseformpointer::printFn(FILE *fp, bfn Fn, const char *sep)
+
+{
     bool doSep = false;
-    baseformpointer * bfp = this;
+    baseformpointer *bfp = this;
     while (bfp)
+    {
+        if (!bfp->hidden)
         {
-        if(!bfp->hidden)
-            {
             if (!hasDuplicateLemma(this, bfp))
-                {
+            {
                 if (doSep)
                     print(fp, sep);
                 else
                     doSep = true;
                 (bfp->bf->*Fn)();
-                }
             }
-        bfp = bfp->next;
         }
+        bfp = bfp->next;
+    }
     if (UseLemmaFreqForDisambiguation == 1)
-        {
+    {
         bfp = this;
         while (bfp)
+        {
+            if (bfp->hidden)
             {
-            if(bfp->hidden)
-                {
                 if (!hasDuplicateLemma(this, bfp))
-                    {
+                {
                     if (doSep)
                         print(fp, sep);
                     else
                         doSep = true;
                     (bfp->bf->*Fn)();
-                    }
                 }
-            bfp = bfp->next;
             }
+            bfp = bfp->next;
         }
     }
+}
 
-#if STREAM
-void baseformpointer::printfbf(ostream *fp,functionTree * fns,const char * sep)
-#else
-void baseformpointer::printfbf(FILE *fp,functionTree * fns,const char * sep)
-#endif
+void baseformpointer::printfbf(FILE *fp, functionTree *fns, const char *sep)
+{
+    if (fns)
     {
-    if(fns)
-        {
         bool doSep = false;
-        baseformpointer * bfp = this;
+        baseformpointer *bfp = this;
         while (bfp)
+        {
+            if (!bfp->hidden)
             {
-            if(!bfp->hidden)
-                {
                 if (!hasDuplicateLemma(this, bfp))
-                    {
+                {
                     if (doSep)
                         print(fp, sep);
                     else
                         doSep = true;
                     fns->printIt(bfp->bf);
-                    }
                 }
-            bfp = bfp->next;
             }
+            bfp = bfp->next;
+        }
         if (UseLemmaFreqForDisambiguation == 1)
-            {
+        {
             bfp = this;
             while (bfp)
-                {
+            {
                 if (bfp->hidden)
-                    {
+                {
                     if (!hasDuplicateLemma(this, bfp))
-                        {
+                    {
                         if (doSep)
                             print(fp, sep);
                         else
                             doSep = true;
                         fns->printIt(bfp->bf);
-                        }
                     }
-                bfp = bfp->next;
                 }
+                bfp = bfp->next;
             }
         }
     }
+}
 
 #if PRINTRULE
-#if STREAM
-void baseformpointer::printfrule(ostream *fp, functionTree * fns, const char * sep)
-#else
-void baseformpointer::printfrule(FILE *fp, functionTree * fns, const char * sep)
-#endif
+void baseformpointer::printfrule(FILE *fp, functionTree *fns, const char *sep)
+
 {
-if (fns)
+    if (fns)
     {
-    bool doSep = false;
-    baseformpointer * bfp = this;
-    while (bfp)
-        {
-        if (!bfp->hidden)
-            {
-            if (!hasDuplicateLemma(this, bfp))
-                {
-                if (doSep)
-                    print(fp, sep);
-                else
-                    doSep = true;
-                fns->printIt(bfp->bf);
-                }
-            }
-        bfp = bfp->next;
-        }
-    if (UseLemmaFreqForDisambiguation == 1)
-        {
-        bfp = this;
+        bool doSep = false;
+        baseformpointer *bfp = this;
         while (bfp)
+        {
+            if (!bfp->hidden)
             {
-            if (bfp->hidden)
-                {
                 if (!hasDuplicateLemma(this, bfp))
-                    {
+                {
                     if (doSep)
                         print(fp, sep);
                     else
                         doSep = true;
                     fns->printIt(bfp->bf);
+                }
+            }
+            bfp = bfp->next;
+        }
+        if (UseLemmaFreqForDisambiguation == 1)
+        {
+            bfp = this;
+            while (bfp)
+            {
+                if (bfp->hidden)
+                {
+                    if (!hasDuplicateLemma(this, bfp))
+                    {
+                        if (doSep)
+                            print(fp, sep);
+                        else
+                            doSep = true;
+                        fns->printIt(bfp->bf);
                     }
                 }
-            bfp = bfp->next;
+                bfp = bfp->next;
             }
         }
     }
 }
 
 void baseformpointer::P()
-    { 
-    this->bf->P(); 
-    }
-void baseformpointer::R() 
-    { 
-    this->bf->R(); 
-    }
+{
+    this->bf->P();
+}
+void baseformpointer::R()
+{
+    this->bf->R();
+}
 
 #endif
 
-void baseformpointer::reassign(basefrm * arg_bf)
-    {
+void baseformpointer::reassign(basefrm *arg_bf)
+{
     owning = false;
-    if(basefrm::hasW)
+    if (basefrm::hasW)
         arg_bf->addFullForms(this->bf);
     delete this->bf;
     this->bf = arg_bf;
-    }
+}
 
-void baseformpointer::addFullForm(Word * word)
-    {
+void baseformpointer::addFullForm(Word *word)
+{
     bf->addFullForm(word);
-    if(next)
+    if (next)
         next->addFullForm(word);
-    }
+}
 
 void baseformpointer::DisambiguateByLemmaFrequency()
-    {
+{
     bool maxSeen = false;
     int maxfreq = 0;
-    baseformpointer * p = this;
-    for(;p;p = p->next)
-        {
+    baseformpointer *p = this;
+    for (; p; p = p->next)
+    {
         int f = p->bf->lemmaFreq();
-        if(f > maxfreq)
-            {
+        if (f > maxfreq)
+        {
             maxfreq = f;
-            }
         }
-    for(p = this;p;p = p->next)
-        {
+    }
+    for (p = this; p; p = p->next)
+    {
         int f = p->bf->lemmaFreq();
-        if(f == maxfreq)
-            {
+        if (f == maxfreq)
+        {
             if (maxSeen)
                 p->hidden = true;
             else
                 maxSeen = true;
-            }
+        }
         else
-            {
+        {
             p->hidden = true;
-            }
         }
     }
+}
 
-void baseformpointer::decFreq(Word * w)
+void baseformpointer::decFreq(Word *w)
+{
+    for (baseformpointer *p = this; p; p = p->next)
     {
-    for(baseformpointer * p = this;p;p = p->next)
+        if (p->hidden)
         {
-        if(p->hidden)
-            {
             p->bf->removeFullForm(w); // remove element from full form list (may already be removed!)
-            }
         }
     }
+}
 
-void baseformpointer::DisambiguateByTagFriends(const char * tag)
+void baseformpointer::DisambiguateByTagFriends(const char *tag)
+{
+    if (next)
     {
-    if(next)
-        {
         int closeness = -1;
-        baseformpointer * p = this;
-        for(;p;p = p->next)
-            {
+        baseformpointer *p = this;
+        for (; p; p = p->next)
+        {
             int f = p->bf->Closeness(tag);
-            if(f >= 0 && (closeness < 0 || f < closeness))
-                {
+            if (f >= 0 && (closeness < 0 || f < closeness))
+            {
                 closeness = f;
-                }
             }
-        for(p = this;p;p = p->next)
-            {
+        }
+        for (p = this; p; p = p->next)
+        {
             int f = p->bf->Closeness(tag);
-            if(f > closeness) // The lower, the better!
-                {
+            if (f > closeness) // The lower, the better!
+            {
                 p->hidden = true;
-                }
             }
         }
     }
+}
 
 #if PRINTRULE
 #if PFRQ || FREQ24
-int baseformpointer::addBaseForm(const char * s, const char * t, const char * p,size_t len,/*int cnt,*/unsigned int frequency)
-    {
+int baseformpointer::addBaseForm(const char *s, const char *t, const char *p, size_t len, /*int cnt,*/ unsigned int frequency)
+{
     if (!bf->equal(s, t))
-        {
+    {
         if (next)
-            {
-            return next->addBaseForm(s, t, p,len,/*cnt,*/frequency);
-            }
-        else
-            {
-            next = new baseformpointer(s, t, p,len,/*cnt,*/frequency);
-            }
-        return 1;
+        {
+            return next->addBaseForm(s, t, p, len, /*cnt,*/ frequency);
         }
+        else
+        {
+            next = new baseformpointer(s, t, p, len, /*cnt,*/ frequency);
+        }
+        return 1;
+    }
     else
         return 0;
-    }
+}
 #else
-int baseformpointer::addBaseForm(const char * s, const char * t, size_t len)
-    {
+int baseformpointer::addBaseForm(const char *s, const char *t, size_t len)
+{
     if (!bf->equal(s, t))
-        {
+    {
         if (next)
-            {
-            return next->addBaseForm(s, t,len);
-            }
-        else
-            {
-            next = new baseformpointer(s, t, len);
-            }
-        return 1;
+        {
+            return next->addBaseForm(s, t, len);
         }
+        else
+        {
+            next = new baseformpointer(s, t, len);
+        }
+        return 1;
+    }
     else
         return 0;
-    }
+}
 #endif
 #else
 #if PFRQ || FREQ24
-int baseformpointer::addBaseForm(const char * s,const char * t,size_t len,/*int cnt,*/unsigned int frequency)
+int baseformpointer::addBaseForm(const char *s, const char *t, size_t len, /*int cnt,*/ unsigned int frequency)
+{
+    if (!bf->equal(s, t))
     {
-    if(!bf->equal(s,t))
+        if (next)
         {
-        if(next)
-            {
-            return next->addBaseForm(s,t,len,/*cnt,*/frequency);
-            }
-        else
-            {
-            next = new baseformpointer(s,t,len,/*cnt,*/frequency);
-            }
-        return 1;
+            return next->addBaseForm(s, t, len, /*cnt,*/ frequency);
         }
+        else
+        {
+            next = new baseformpointer(s, t, len, /*cnt,*/ frequency);
+        }
+        return 1;
+    }
     else
         return 0;
-    }
+}
 #else
-int baseformpointer::addBaseForm(const char * s,const char * t,size_t len) 
+int baseformpointer::addBaseForm(const char *s, const char *t, size_t len)
+{
+    if (!bf->equal(s, t))
     {
-    if(!bf->equal(s,t))
+        if (next)
         {
-        if(next)
-            {
-            return next->addBaseForm(s,t,len);
-            }
-        else
-            {
-            next = new baseformpointer(s,t,len);
-            }
-        return 1;
+            return next->addBaseForm(s, t, len);
         }
+        else
+        {
+            next = new baseformpointer(s, t, len);
+        }
+        return 1;
+    }
     else
         return 0;
-    }
+}
 #endif
 #endif
 #endif

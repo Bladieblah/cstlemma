@@ -32,6 +32,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <assert.h>
 #include "hashmap.h"
 
+#include <string>
+
+using namespace std;
+
 static hashmap::hash<Word> *Hash = 0;
 
 #ifdef COUNTOBJECTS
@@ -780,7 +784,8 @@ void text::Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutpu
     {
         if (nice)
             LOG1LINE("print Unsorted words");
-        // printUnsorted(fpo);
+        string str = "";
+        writeUnsorted(str);
     }
     if (nice)
         LOG1LINE("...listed words");

@@ -43,7 +43,7 @@ class formattingFunction
 {
 public:
     virtual void doIt(const OutputClass *outputObj) const = 0;
-    virtual std::string toString(const OutputClass *outputObj);
+    virtual std::string toString(const OutputClass *outputObj, std::string &str);
     virtual int count(const OutputClass *outputObj) const
     {
         REFER(outputObj)

@@ -27,9 +27,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <assert.h>
 #include <stdlib.h>
 
+#include <string>
+
+using namespace std;
+
 functionTree::functionTree() : m_fnc(NULL), next(NULL), child(NULL), m_comp(comparison::eany), m_nmbr(-1), Hidden(false)
 {
-
 }
 
 functionTree::~functionTree()
@@ -55,6 +58,24 @@ void functionTree::printIt(const OutputClass *outputObj) const
     }
     if (next)
         next->printIt(outputObj);
+}
+
+void functionTree::writeIt(const OutputClass *outputObj, string &str) const
+{
+    if (!Hidden)
+    {
+        if (!skip(outputObj))
+        {
+            if (m_fnc)
+                m_fnc->toString(outputObj, str);
+            if (child)
+            {
+                child->writeIt(outputObj, str);
+            }
+        }
+    }
+    if (next)
+        next->writeIt(outputObj, str);
 }
 
 int functionTree::count(const OutputClass *outputObj) const

@@ -38,8 +38,8 @@ public:
     virtual void DoYourWork(
         FILE *fpi, optionStruct &Option){};
 
-    virtual void printUnsorted(
-        FILE *fpo);
+    virtual void printUnsorted(FILE *fpo);
+    virtual void writeUnsorted(FILE *fpo, std::string &str);
 };
 
 #endif

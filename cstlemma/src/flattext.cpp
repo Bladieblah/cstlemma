@@ -389,6 +389,31 @@ void flattext::printUnsorted(FILE *fpo)
         Word::NewLinesAfterWord = 0;
     }
 }
+{
+    REFER(buf)
+    REFER(lastBufByte)
+    return s;
+}
+
+void flattext::writeUnsorted(FILE *fpo, string &str)
+{
+    unsigned long line = 0;
+    unsigned long k;
+    REFER(fpo) // unused
+    for (k = 0; k < total; ++k)
+    {
+        while (k >= Lines[line] && line <= lineno)
+        {
+            Word::NewLinesAfterWord++;
+            ++line;
+        }
+        if (tunsorted[k])
+        {
+            tunsorted[k]->write(str);
+        }
+        Word::NewLinesAfterWord = 0;
+    }
+}
 
 flattext::flattext(FILE *fpi, bool a_InputHasTags, char *Iformat, int keepPunctuation, bool nice,
                    unsigned long int size, bool treatSlashAsAlternativesSeparator)

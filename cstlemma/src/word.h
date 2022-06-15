@@ -83,21 +83,56 @@ protected:
         else
             fputc(' ', fp);
     }
+    void iString(std::string &str) const
+    {
+        if (pbfL)
+        {
+            if (pbfD)
+                str.append("+");
+            else
+                str.append("-");
+        }
+        else
+            str.append(" ");
+    }
+
     void f() const
     {
         fprintf(fp, "%d", cnt);
     }
+    void fString(std::string &str) const
+    {
+        char *toAdd;
+        sprintf(toAdd, "%d", cnt);
+        str.append(toAdd);
+    }
+
     void w() const
     {
         ::print(fp, m_word);
-        // fprintf(fp,"%s",m_word);
     }
+    void wString(std::string &str) const
+    {
+        str.append(m_word);
+    }
+
     void b() const
     {
         if (pbfD)
             pbfD->printfbf(fp, bfuncs, sep);
     }
+    void bString(std::string &str) const
+    {
+        if (pbfD)
+            pbfD->printfbf(fp, bfuncs, sep);
+    }
+
     void B() const
+    {
+        if (pbfL)
+            pbfL->printfbf(fp, Bfuncs, sep);
+    }
+    void BString(std::string &str) const
     {
         if (pbfL)
             pbfL->printfbf(fp, Bfuncs, sep);
@@ -187,6 +222,7 @@ public:
             return 0;
     }
     virtual void print() const;
+    virtual void write() const;
     virtual void printLemmaClass() const;
     virtual void printnew() const
     {

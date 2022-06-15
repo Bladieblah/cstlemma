@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "comparison.h"
 
+#include <string>
+
 class formattingFunction;
 class OutputClass;
 //typedef enum comparison;
@@ -51,6 +53,7 @@ class functionTree
         bool passTest(const OutputClass * outputObj)const;
         bool OK(const OutputClass * outputObj)const;
         void printIt(const OutputClass * outputObj)const;
+        void writeIt(const OutputClass * outputObj, std::string &str)const;
         int count(const OutputClass * outputObj)const;
         int count2(const OutputClass * outputObj)const;
         void setFunction(formattingFunction * fnc)
