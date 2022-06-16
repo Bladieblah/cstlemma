@@ -66,6 +66,8 @@ public:
 #if PRINTRULE
         void P();
         void R();
+        void PString(std::string &str);
+        void RString(std::string &str);
 #endif
 #if PFRQ || FREQ24
         baseformpointer(const char *s, const char *t, size_t len, unsigned int frequency);

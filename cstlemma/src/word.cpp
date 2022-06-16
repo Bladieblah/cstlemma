@@ -132,10 +132,20 @@ void Word::P() const
     if (pbfL)
         pbfL->P();
 }
+void Word::PString(string &str) const
+{
+    if (pbfL)
+        pbfL->PString(str);
+}
 void Word::R() const
 {
     if (pbfL)
         pbfL->R();
+}
+void Word::RString(string &str) const
+{
+    if (pbfL)
+        pbfL->RString(str);
 }
 #endif
 
@@ -144,27 +154,27 @@ formattingFunction *Word::getUnTaggedWordFunction(int character, bool &SortInput
     switch (character)
     {
     case 'i':
-        return new functionNoArg(&Word::i, 0);
+        return new functionNoArg(&Word::i, &Word::iString, 0);
     case 'f':
         SortInput = true;
-        return new functionNoArg(&Word::f, 0);
+        return new functionNoArg(&Word::f, &Word::fString, 0);
     case 'w':
-        return new functionNoArg(&Word::w, 0);
+        return new functionNoArg(&Word::w, &Word::wString, 0);
     case 'b':
         hasb = true;
         testType |= NUMBERTEST;
-        return new functionNoArg(&Word::b, &Word::countBaseForms);
+        return new functionNoArg(&Word::b, &Word::bString, &Word::countBaseForms);
     case 'B':
         hasB = true;
         testType |= NUMBERTEST;
-        return new functionNoArg(&Word::B, &Word::countBaseFormsL);
+        return new functionNoArg(&Word::B, &Word::BString, &Word::countBaseFormsL);
     case 's':
-        return new functionNoArg(&Word::s, 0);
+        return new functionNoArg(&Word::s, &Word::sString, 0);
 #if PRINTRULE
     case 'p':
-        return new functionNoArg(&Word::P, 0);
+        return new functionNoArg(&Word::P, &Word::PString, 0);
     case 'r':
-        return new functionNoArg(&Word::R, 0);
+        return new functionNoArg(&Word::R, &Word::RString, 0);
 #endif
     default:
         return 0;
@@ -177,19 +187,19 @@ formattingFunction *Word::getUnTaggedWordFunctionNoBb(int character, bool &SortI
     switch (character)
     {
     case 'i':
-        return new functionNoArg(&Word::i, 0);
+        return new functionNoArg(&Word::i, &Word::iString, 0);
     case 'f':
         SortInput = true;
-        return new functionNoArg(&Word::f, 0);
+        return new functionNoArg(&Word::f, &Word::fString, 0);
     case 'w':
-        return new functionNoArg(&Word::w, 0);
+        return new functionNoArg(&Word::w, &Word::wString, 0);
     case 's':
-        return new functionNoArg(&Word::s, 0);
+        return new functionNoArg(&Word::s, &Word::sString, 0);
 #if PRINTRULE
     case 'p':
-        return new functionNoArg(&Word::P, 0);
+        return new functionNoArg(&Word::P, &Word::PString, 0);
     case 'r':
-        return new functionNoArg(&Word::R, 0);
+        return new functionNoArg(&Word::R, &Word::RString, 0);
 #endif
     default:
         return 0;

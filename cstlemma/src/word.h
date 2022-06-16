@@ -124,7 +124,7 @@ protected:
     void bString(std::string &str) const
     {
         if (pbfD)
-            pbfD->printfbf(fp, bfuncs, sep);
+            pbfD->writefbf(str, bfuncs, sep);
     }
 
     void B() const
@@ -135,14 +135,16 @@ protected:
     void BString(std::string &str) const
     {
         if (pbfL)
-            pbfL->printfbf(fp, Bfuncs, sep);
+            pbfL->writefbf(str, Bfuncs, sep);
     }
     void p() const; /*20191216 rule by which lemma is formed. Display '=' in
                         case of dictionary look up or rule w/o wild cards.*/
     void r() const; /*20210308 rule by which lemma is formed. Display '=' in
                         case of dictionary look up or rule w/o wild cards.*/
     void P() const;
+    void PString(std::string &str) const;
     void R() const;
+    void RString(std::string &str) const;
     void s() const
     {
         if (NewLinesAfterWord)
@@ -156,6 +158,20 @@ protected:
         }
         else
             fputc(' ', fp);
+    }
+    void sString(std::string &str) const
+    {
+        if (NewLinesAfterWord)
+        {
+            if (LineNumber > 0)
+            {
+                for (int n = NewLinesAfterWord; n > 0; --n)
+                    str.append("\n");
+            }
+            LineNumber++;
+        }
+        else
+            str.append(" ");
     }
     static bool hasb;
     static bool hasB;

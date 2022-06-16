@@ -73,9 +73,12 @@ private:
     std::string L() const;
 
 public:
+    void printToFile(const char *s) const;
 #if PRINTRULE
     std::string P() const;
     std::string R() const;
+    std::string PString(std::string &str) const;
+    std::string RString(std::string &str) const;
 #endif
     static functionTree *bfuncs; // used if -W option set
     static functionTree *Bfuncs; // used if -W option set

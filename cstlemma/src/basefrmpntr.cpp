@@ -293,6 +293,14 @@ void baseformpointer::R()
 {
     this->bf->R();
 }
+void baseformpointer::PString(string &str)
+{
+    this->bf->PString(str);
+}
+void baseformpointer::RString(string &str)
+{
+    this->bf->RString(str);
+}
 
 #endif
 

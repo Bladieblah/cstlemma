@@ -338,6 +338,12 @@ static void printOther(FILE *fpo, const char *s)
         fprintf(fpo, "%s", s);
 }
 
+void basefrm::printToFile(const char *s) const
+{
+    if (s)
+        fprintf(m_fp, "%s", s);
+}
+
 void (*print)(FILE *fpo, const char *s) = printOther;
 
 string basefrm::T() const
@@ -350,7 +356,7 @@ string basefrm::T() const
 string basefrm::W() const
 {
     char *c;
-    sprintf(c, "%s", m_t);
+    sprintf(c, "%s", m_s);
     return string(c);
 }
 
@@ -358,13 +364,25 @@ string basefrm::W() const
 string basefrm::P() const
 {
     char *c;
-    sprintf(c, "%s", m_t);
+    sprintf(c, "%s", m_p);
     return string(c);
 }
 string basefrm::R() const
 {
     char *c;
-    sprintf(c, "%s", m_t);
+    sprintf(c, "%s", m_r);
+    return string(c);
+}
+string basefrm::PString(string &str) const
+{
+    char *c;
+    sprintf(c, "%s", m_p);
+    return string(c);
+}
+string basefrm::RString(string &str) const
+{
+    char *c;
+    sprintf(c, "%s", m_r);
     return string(c);
 }
 #endif
