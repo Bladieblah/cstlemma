@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #if defined PROGLEMMATISE
 
 #include <stdio.h>
+#include <string>
 
 class Word;
 class taggedWord;
@@ -106,23 +107,14 @@ public:
     void Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, enum caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas);
 
     text(bool InputHasTags, bool nice);
-    virtual void DoYourWork(
-        FILE *fpi
-
-        ,
-        optionStruct &Option) = 0;
+    virtual void DoYourWork(FILE *fpi, optionStruct &Option) = 0;
     virtual ~text();
-    void createUnTaggedAlternatives(
-        char *w);
+    void createUnTaggedAlternatives(char *w);
     void createUnTagged(const char *w);
-    void createTaggedAlternatives(
-        char *w,
-        const char *tag);
+    void createTaggedAlternatives(char *w, const char *tag);
     void createTagged(const char *w, const char *tag);
-    virtual void printUnsorted(
-        FILE *fpo
-
-        ) = 0;
+    virtual void printUnsorted(FILE *fpo) = 0;
+    virtual void writeUnsorted(std::string str) = 0;
     void makeList();
 };
 

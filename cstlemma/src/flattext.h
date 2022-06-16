@@ -39,7 +39,7 @@ public:
         FILE *fpi, optionStruct &Option){};
 
     virtual void printUnsorted(FILE *fpo);
-    virtual void writeUnsorted(FILE *fpo, std::string &str);
+    virtual void writeUnsorted(std::string &str);
 };
 
 #endif

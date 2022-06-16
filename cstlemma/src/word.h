@@ -27,8 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #if defined PROGLEMMATISE
 #include "outputclass.h"
 #include "basefrmpntr.h"
-#include <string.h>
 #include <stdio.h>
+#include <string>
 
 class taggedWord;
 class Word;
@@ -222,7 +222,7 @@ public:
             return 0;
     }
     virtual void print() const;
-    virtual void write() const;
+    virtual void write(std::string &str) const;
     virtual void printLemmaClass() const;
     virtual void printnew() const
     {

@@ -24,6 +24,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "basefrm.h"
 #include "functiontree.h"
 #include <stdio.h>
+#include <string>
+
+using namespace std;
 
 #ifdef COUNTOBJECTS
 int baseformpointer::COUNT = 0;
@@ -186,6 +189,49 @@ void baseformpointer::printfbf(FILE *fp, functionTree *fns, const char *sep)
                         else
                             doSep = true;
                         fns->printIt(bfp->bf);
+                    }
+                }
+                bfp = bfp->next;
+            }
+        }
+    }
+}
+
+void baseformpointer::writefbf(string &str, functionTree *fns, const char *sep)
+{
+    if (fns)
+    {
+        bool doSep = false;
+        baseformpointer *bfp = this;
+        while (bfp)
+        {
+            if (!bfp->hidden)
+            {
+                if (!hasDuplicateLemma(this, bfp))
+                {
+                    if (doSep)
+                        str.append(sep);
+                    else
+                        doSep = true;
+                    fns->writeIt(bfp->bf, str);
+                }
+            }
+            bfp = bfp->next;
+        }
+        if (UseLemmaFreqForDisambiguation == 1)
+        {
+            bfp = this;
+            while (bfp)
+            {
+                if (bfp->hidden)
+                {
+                    if (!hasDuplicateLemma(this, bfp))
+                    {
+                        if (doSep)
+                            str.append(sep);
+                        else
+                            doSep = true;
+                        fns->writeIt(bfp->bf, str);
                     }
                 }
                 bfp = bfp->next;

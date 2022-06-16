@@ -36,6 +36,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stdlib.h>
 #include <limits.h>
 
+#include <string>
+
+using namespace std;
+
 #ifdef COUNTOBJECTS
 int Word::COUNT = 0;
 #endif
@@ -195,6 +199,11 @@ formattingFunction *Word::getUnTaggedWordFunctionNoBb(int character, bool &SortI
 void Word::print() const
 {
     funcs->printIt(this);
+}
+
+void Word::write(string &str) const
+{
+    funcs->writeIt(this, str);
 }
 
 void Word::printLemmaClass() const

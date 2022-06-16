@@ -395,7 +395,7 @@ void flattext::printUnsorted(FILE *fpo)
     return s;
 }
 
-void flattext::writeUnsorted(FILE *fpo, string &str)
+void flattext::writeUnsorted(string &str)
 {
     unsigned long line = 0;
     unsigned long k;

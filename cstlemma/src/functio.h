@@ -33,7 +33,7 @@ class basefrm;
 class Word;
 class taggedWord;
 
-typedef void (basefrm::*fptrbf)() const;
+typedef std::string (basefrm::*fptrbf)() const;
 typedef void (Word::*fptr)() const;
 typedef void (taggedWord::*fptrt)() const;
 typedef int (Word::*fptcount)() const;
@@ -43,7 +43,7 @@ class formattingFunction
 {
 public:
     virtual void doIt(const OutputClass *outputObj) const = 0;
-    virtual std::string toString(const OutputClass *outputObj, std::string &str);
+    virtual void toString(const OutputClass *outputObj, std::string &str);
     virtual int count(const OutputClass *outputObj) const
     {
         REFER(outputObj)
@@ -61,6 +61,10 @@ private:
 
 public:
     functionNoArgB(fptrbf fn) : m_fn(fn) {}
+    void doIt(const OutputClass *outputObj) const
+    {
+        (((const basefrm *)outputObj)->*m_fn)();
+    }
     void doIt(const OutputClass *outputObj) const
     {
         (((const basefrm *)outputObj)->*m_fn)();
