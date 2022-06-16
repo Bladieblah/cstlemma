@@ -73,7 +73,7 @@ public:
 
         int LemmatiseFile();
         int LemmatiseInit();
-        int LemmatiseString(std::string str);
+        std::string LemmatiseString(std::string str);
         void LemmatiseEnd();
 #endif
 #if defined PROGMAKEDICT

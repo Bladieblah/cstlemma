@@ -627,7 +627,7 @@ void text::Lemmatise(FILE *fpo, const char *Sep, tallyStruct *tally, unsigned in
     }
 }
 
-void text::Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas)
+string text::Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas)
 {
     flex::baseformsAreLowercase = baseformsAreLowercase;
     lext::baseformsAreLowercase = baseformsAreLowercase;
@@ -636,6 +636,8 @@ void text::Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutpu
     baseformpointer::UseLemmaFreqForDisambiguation = UseLemmaFreqForDisambiguation;
     taggedWord::sep = Sep;
     basefrm::sep = Sep;
+    
+    string str = "";
 
     pcmpBaseforms = cmpBaseforms_w;
     switch (SortOutput)
@@ -784,7 +786,6 @@ void text::Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutpu
     {
         if (nice)
             LOG1LINE("print Unsorted words");
-        string str = "";
         writeUnsorted(str);
     }
     if (nice)
@@ -800,6 +801,8 @@ void text::Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutpu
         for (size_t i = 0; i < N; ++i)
             Root[i]->deleteSecondaryStuff();
     }
+
+    return str;
 }
 
 void text::insert(const char *w)

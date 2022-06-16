@@ -48,8 +48,8 @@ tagpairs *Lemmatiser::TextToDictTags = 0;
 
 static int info(const char *fmt, ...)
 {
-    // if (DoInfo)
-    // {
+    if (DoInfo)
+    {
         int ret;
         va_list ap;
         va_start(ap, fmt);
@@ -57,7 +57,7 @@ static int info(const char *fmt, ...)
         va_end(ap);
         LOG1LINE("");
         return ret;
-    // }
+    }
     return 0;
 }
 
@@ -892,25 +892,29 @@ int Lemmatiser::LemmatiseFile()
     return 0;
 }
 
-int Lemmatiser::LemmatiseString(string str)
+string Lemmatiser::LemmatiseString(string str)
 {
+    string result;
+
     tallyStruct tally;
 
     text *Text;
 
+    LOG1LINE("flattext");
     Text = new flattext(str, Option.keepPunctuation, Option.nice, Option.size, Option.treatSlashAsAlternativesSeparator);
     
     if (Option.nice)
         LOG1LINE("processing");
     
-    Text->Lemmatise(Option.Sep, &tally, Option.SortOutput, Option.UseLemmaFreqForDisambiguation, Option.nice, Option.DictUnique, Option.RulesUnique, Option.baseformsAreLowercase, listLemmas, Option.Wformat != NULL                         // list lemmas with all word forms
+    LOG1LINE("lemmatising");
+    result = Text->Lemmatise(Option.Sep, &tally, Option.SortOutput, Option.UseLemmaFreqForDisambiguation, Option.nice, Option.DictUnique, Option.RulesUnique, Option.baseformsAreLowercase, listLemmas, Option.Wformat != NULL                         // list lemmas with all word forms
                                                                                                                                                                                                          && ((listLemmas & 3) == 3)                 // both of -b and -B are specified
                                                                                                                                                                                                          && !strcmp(Option.Bformat, Option.bformat) // -b and -B options are the same format
                                                                                                                                                                                                                                                     // true: outputs must be merged
     );
     delete Text;
 
-    return 0;
+    return result;
 }
 
 void Lemmatiser::LemmatiseEnd()

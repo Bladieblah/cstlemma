@@ -1077,6 +1077,7 @@ OptReturnTp optionStruct::readArgs(int argc, char * argv[])
     SortOutput = 0;
     Wformat = NULL;
 #endif
+    fprintf(stderr, "Hi\n");
     OptReturnTp result = OptReturnTp::GoOn;
     while((c = getopt(argc,argv, opts)) != -1)
         {

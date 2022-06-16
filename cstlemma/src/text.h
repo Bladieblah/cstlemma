@@ -104,7 +104,7 @@ public:
     }
     static bool setFormat(const char *format, const char *bformat, const char *Bformat, bool InputHasTags);
     void Lemmatise(FILE *fpo, const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, enum caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas);
-    void Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, enum caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas);
+    std::string Lemmatise(const char *Sep, tallyStruct *tally, unsigned int SortOutput, int UseLemmaFreqForDisambiguation, bool nice, bool DictUnique, bool RulesUnique, enum caseTp baseformsAreLowercase, int listLemmas, bool mergeLemmas);
 
     text(bool InputHasTags, bool nice);
     virtual void DoYourWork(FILE *fpi, optionStruct &Option) = 0;

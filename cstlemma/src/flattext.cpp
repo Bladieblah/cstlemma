@@ -238,6 +238,7 @@ static char *getword(string str, string::size_type &pos, const char *&tag, int k
     static char buf[1000];
     static int eof = false;
     static int prevkar = 0;
+
     newlines = 0;
     slashFound = 0;
     if (punct)
@@ -291,8 +292,10 @@ static char *getword(string str, string::size_type &pos, const char *&tag, int k
             ++slashFound;
         *p++ = (char)kar;
     }
+
     *p = '\0';
     slashFound = sanityCheck(slashFound, buf);
+    
     return buf;
 }
 
@@ -584,7 +587,7 @@ flattext::flattext(string str, int keepPunctuation, bool nice,
     unsigned long newlines;
     char *w;
 
-    while (total < size && (w = getword(str, pos, Tag, keepPunctuation, slashFound, newlines)) != 0)
+    while (total < size && pos < str.size() && (w = getword(str, pos, Tag, keepPunctuation, slashFound, newlines)) != 0)
     {
         lineno += newlines;
         if (*w)
@@ -622,7 +625,7 @@ flattext::flattext(string str, int keepPunctuation, bool nice,
     lineno = 0;
     pos = 0;
 
-    while (total < size && (w = getword(str, pos, Tag, keepPunctuation, slashFound, newlines)) != 0)
+    while (total < size && pos < str.size() && (w = getword(str, pos, Tag, keepPunctuation, slashFound, newlines)) != 0)
     {
         if (slashFound && treatSlashAsAlternativesSeparator)
             createUnTaggedAlternatives(w);
