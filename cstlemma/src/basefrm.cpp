@@ -160,6 +160,16 @@ string basefrm::L() const
             print(m_fp, sep);
     }
 }
+string basefrm::LString(string &str) const
+{
+    assert(basefrm::hasW);
+    for (unsigned int i = 0; i < nfullForm; ++i)
+    {
+        wfuncs->writeIt(fullForm[i], str);
+        if (i < (unsigned int)(nfullForm - 1))
+            str.append(sep);
+    }
+}
 
 bool basefrm::setFormat(const char *Wformat, const char *bformat, const char *Bformat, bool InputHasTags)
 {
@@ -370,7 +380,7 @@ string basefrm::P() const
 string basefrm::R() const
 {
     char *c;
-    sprintf(c, "%s", m_r);
+    sprintf(c, "%s", m_r());
     return string(c);
 }
 string basefrm::PString(string &str) const
@@ -381,9 +391,7 @@ string basefrm::PString(string &str) const
 }
 string basefrm::RString(string &str) const
 {
-    char *c;
-    sprintf(c, "%s", m_r);
-    return string(c);
+    str.append(m_r());
 }
 #endif
 

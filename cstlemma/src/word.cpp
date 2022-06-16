@@ -526,7 +526,7 @@ formattingFunction *taggedWord::getTaggedWordFunction(int character, bool &SortI
     switch (character)
     {
     case 't':
-        return new functionNoArgT(&taggedWord::t);
+        return new functionNoArgT(&taggedWord::t, &taggedWord::tString);
     }
     return Word::getUnTaggedWordFunction(character, SortInput, testType);
 }
@@ -536,7 +536,7 @@ formattingFunction *taggedWord::getTaggedWordFunctionNoBb(int character, bool &S
     switch (character)
     {
     case 't':
-        return new functionNoArgT(&taggedWord::t);
+        return new functionNoArgT(&taggedWord::t, &taggedWord::tString);
     }
     return Word::getUnTaggedWordFunctionNoBb(character, SortInput, testType);
 }

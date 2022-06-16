@@ -37,6 +37,7 @@ typedef std::string (basefrm::*fptrbf)() const;
 typedef void (Word::*fptr)() const;
 typedef void (Word::*fptrs)(std::string &str) const;
 typedef void (taggedWord::*fptrt)() const;
+typedef void (taggedWord::*fptrts)(std::string &str) const;
 typedef int (Word::*fptcount)() const;
 typedef int (basefrm::*fptcountbf)() const;
 
@@ -151,10 +152,14 @@ private:
 
 public:
     functionNoArgW(fptrbf fn, fptcountbf fncount) : m_fn(fn), m_fncount(fncount) {}
-    void doIt(const OutputClass *u) const
+    void doIt(const OutputClass *outputObj) const
     {
-        const basefrm *tmp = (const basefrm *)u;
+        const basefrm *tmp = (const basefrm *)outputObj;
         (tmp->*m_fn)();
+    }
+    void toString(const OutputClass *outputObj, std::string &str) const
+    {
+        str.append((((const basefrm *)outputObj)->*m_fn)());
     }
     virtual bool skip(const basefrm *bf) const
     {
@@ -177,12 +182,17 @@ class functionNoArgT : public formattingFunction
 {
 private:
     fptrt m_fn;
+    fptrts m_fns;
 
 public:
-    functionNoArgT(fptrt fn) : m_fn(fn) {}
-    void doIt(const OutputClass *u) const
+    functionNoArgT(fptrt fn, fptrts fns) : m_fn(fn), m_fns(fns) {}
+    void doIt(const OutputClass *outputObj) const
     {
-        ((const taggedWord *)u->*m_fn)();
+        ((const taggedWord *)outputObj->*m_fn)();
+    }
+    void toString(const OutputClass *outputObj, std::string &str) const
+    {
+        (((const taggedWord *)outputObj)->*m_fns)(str);
     }
     virtual bool skip(const basefrm *bf) const
     {

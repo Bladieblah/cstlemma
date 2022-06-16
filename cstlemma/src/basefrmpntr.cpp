@@ -154,6 +154,46 @@ void baseformpointer::printFn(FILE *fp, bfn Fn, const char *sep)
     }
 }
 
+void baseformpointer::printFn(FILE *fp, bfns Fn, const char *sep)
+{
+    bool doSep = false;
+    baseformpointer *bfp = this;
+    while (bfp)
+    {
+        if (!bfp->hidden)
+        {
+            if (!hasDuplicateLemma(this, bfp))
+            {
+                if (doSep)
+                    print(fp, sep);
+                else
+                    doSep = true;
+                fprintf(fp, "%s", (bfp->bf->*Fn)()->c_str());
+            }
+        }
+        bfp = bfp->next;
+    }
+    if (UseLemmaFreqForDisambiguation == 1)
+    {
+        bfp = this;
+        while (bfp)
+        {
+            if (bfp->hidden)
+            {
+                if (!hasDuplicateLemma(this, bfp))
+                {
+                    if (doSep)
+                        print(fp, sep);
+                    else
+                        doSep = true;
+                    fprintf(fp, "%s", (bfp->bf->*Fn)()->c_str());
+                }
+            }
+            bfp = bfp->next;
+        }
+    }
+}
+
 void baseformpointer::printfbf(FILE *fp, functionTree *fns, const char *sep)
 {
     if (fns)

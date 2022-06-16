@@ -36,6 +36,7 @@ class functionTree;
 class Word;
 
 typedef void (basefrm::*bfn)(void) const;
+typedef std::string (basefrm::*bfns)(void) const;
 
 class baseformpointer
 {
@@ -58,6 +59,7 @@ public:
 
         void printfbf(FILE *fp, functionTree *fns, const char *sep);
         void printFn(FILE *fp, bfn Fn, const char *sep);
+        void printFn(FILE *fp, bfns Fn, const char *sep);
         void writefbf(std::string &str, functionTree *fns, const char *sep);
         void writeFn(std::string &str, bfn Fn, const char *sep);
 #if PRINTRULE

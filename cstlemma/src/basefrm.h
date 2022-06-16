@@ -67,10 +67,12 @@ private:
     {
         char *c;
         sprintf(c, "%d", lemmaFreq()); // shows the frequency of the lemma in the current text.
-        return string(c);
+        return std::string(c);
     }
     std::string W() const;
     std::string L() const;
+    std::string WString(std::string &str) const;
+    std::string LString(std::string &str) const;
 
 public:
     void printToFile(const char *s) const;

@@ -102,7 +102,7 @@ protected:
     }
     void fString(std::string &str) const
     {
-        char *toAdd;
+        char toAdd[3];
         sprintf(toAdd, "%d", cnt);
         str.append(toAdd);
     }
@@ -383,6 +383,10 @@ private:
     void t() const
     {
         ::print(fp, m_tag);
+    }
+    void tString(std::string &str) const
+    {
+        str.append(m_tag);
     }
 
 protected:
