@@ -900,13 +900,11 @@ string Lemmatiser::LemmatiseString(string str)
 
     text *Text;
 
-    LOG1LINE("flattext");
     Text = new flattext(str, Option.keepPunctuation, Option.nice, Option.size, Option.treatSlashAsAlternativesSeparator);
     
     if (Option.nice)
         LOG1LINE("processing");
     
-    LOG1LINE("lemmatising");
     result = Text->Lemmatise(Option.Sep, &tally, Option.SortOutput, Option.UseLemmaFreqForDisambiguation, Option.nice, Option.DictUnique, Option.RulesUnique, Option.baseformsAreLowercase, listLemmas, Option.Wformat != NULL                         // list lemmas with all word forms
                                                                                                                                                                                                          && ((listLemmas & 3) == 3)                 // both of -b and -B are specified
                                                                                                                                                                                                          && !strcmp(Option.Bformat, Option.bformat) // -b and -B options are the same format

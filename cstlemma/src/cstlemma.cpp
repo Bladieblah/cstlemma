@@ -33,87 +33,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stdio.h>
 #include <stddef.h>
 #include <string>
-#include <iostream>
 
 using namespace std;
 
-// int main(int argc, char *argv[])
-// {
-//     if (argc == 1)
-//     {
-//         LOG1LINE("");
-//         LOG1LINE("CSTLEMMA version " CSTLEMMAVERSION " (" CSTLEMMADATE ")");
-//         LOG1LINE("Copyright (C) " CSTLEMMACOPYRIGHT);
-//         if (sizeof(ptrdiff_t) == 8)
-//             LOG1LINE("64-bit");
-//         else
-//             LOG1LINE("32-bit");
-//         LOG1LINE("CSTLEMMA comes with ABSOLUTELY NO WARRANTY; for details use option -w.");
-//         LOG1LINE("This is free software, and you are welcome to redistribute it under");
-//         LOG1LINE("certain conditions; use option -r for details.");
-//         LOG1LINE("");
-//         LOG1LINE("");
-//         LOG1LINE("Use option -h for usage.");
-//         return 0;
-//     }
-
-//     optionStruct Option;
-//     int ret;
-
-//     OptReturnTp optResult = Option.readArgs(argc, argv);
-//     if (optResult == OptReturnTp::Error)
-//     {
-//         return 1;
-//     }
-
-//     if (optResult == OptReturnTp::Leave)
-//     { // option -r, -w, -? or -h
-//         return 0;
-//     }
-
-//     Lemmatiser theLemmatiser(Option);
-//     if ((ret = theLemmatiser.getStatus()) == 0)
-//     {
-//         switch (Option.whattodo)
-//         {
-//         case whattodoTp::MAKEDICT:
-//         {
-//             break;
-//         }
-//         case whattodoTp::MAKEFLEXPATTERNS:
-//         {
-//             break;
-//         }
-//         default:
-//         {
-//             ret = theLemmatiser.LemmatiseFile();
-//         }
-//         }
-//     }
-//     Word::deleteStaticMembers();
-//     return ret;
-// }
-
 int main(int argc, char *argv[])
 {
-    char options[6][50] = {"./cstlemma", "-L", "-f", "rules/flexrules_nl", "-d", "rules/dict_nl"};
-
     optionStruct Option;
 
-    cout << "reading options\n";
-    // OptReturnTp optResult = Option.readArgs(6, (char **)&options);
-    // OptReturnTp optResult = Option.readArgs(argc, argv);
-    Option.doSwitch('L', "", argv[0]);
-    Option.doSwitch('y', "", argv[0]);
-    Option.doSwitch('f', "rules/flexrules_nl", argv[0]);
-    Option.doSwitch('d', "rules/dict_nl", argv[0]);
-    cout << "done options\n";
+    Option.doSwitch('L', (char *)"", argv[0]);
+    Option.doSwitch('f', (char *)"rules/flexrules_nl", argv[0]);
+    Option.doSwitch('d', (char *)"rules/dict_nl", argv[0]);
 
-    cout << "lemmatiser\n";
     Lemmatiser theLemmatiser(Option);
-    cout << "lemmatising\n";
-    cout << theLemmatiser.LemmatiseString(string("hoi ik ga een abonnement opzeggen heb ik opgezegd ik zeg op")) << endl;
-    cout << "done\n";
+    LOG1LINE(theLemmatiser.LemmatiseString(string("hoi ik ga een abonnement opzeggen heb ik opgezegd ik zeg op")).c_str());
     Word::deleteStaticMembers();
 
     return 0;

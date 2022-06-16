@@ -366,9 +366,6 @@ int Word::addBaseFormsDL(lext *Plext, int nmbr, // The dictionary's available
 
 bool Word::setFormat(const char *cformat, const char *bformat, const char *Bformat, bool InputHasTags)
 {
-    fprintf(stderr, "c = %s\n", cformat);
-    fprintf(stderr, "b = %s\n", bformat);
-    fprintf(stderr, "B = %s\n", Bformat);
     bool SortInput = false;
     getFunction gfnc = InputHasTags ? taggedWord::getTaggedWordFunction : Word::getUnTaggedWordFunction;
     if (funcs)
@@ -378,7 +375,6 @@ bool Word::setFormat(const char *cformat, const char *bformat, const char *Bform
     OutputClass::Format(cformat, gfnc, *funcs, cformat, SortInput, testType);
     if (hasb)
     {
-        fprintf(stderr, "Has b\n");
         if (bformat)
         {
             bfuncs = basefrm::Format(bformat);
@@ -392,13 +388,11 @@ bool Word::setFormat(const char *cformat, const char *bformat, const char *Bform
     }
     else if (bformat)
     {
-        fprintf(stderr, "Has bf\n");
         fprintf(stderr, "Warning: -b pattern \"%s\"specified on commandline but not used. (Output format %s doesn't specify dictionary field $b)\n", bformat, cformat);
     }
 
     if (hasB)
     {
-        fprintf(stderr, "Has B\n");
         if (Bformat)
         {
             Bfuncs = basefrm::Format(Bformat);
