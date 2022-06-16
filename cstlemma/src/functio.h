@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define FUNCTION_H
 
 #include "defines.h"
+#include "basefrm.h"
 #if defined PROGLEMMATISE
 
 #include <stdio.h>
@@ -33,7 +34,8 @@ class basefrm;
 class Word;
 class taggedWord;
 
-typedef std::string (basefrm::*fptrbf)() const;
+typedef void (basefrm::*fptrbfs)(std::string &str) const;
+typedef void (basefrm::*fptrbf)() const;
 typedef void (Word::*fptr)() const;
 typedef void (Word::*fptrs)(std::string &str) const;
 typedef void (taggedWord::*fptrt)() const;
@@ -45,7 +47,7 @@ class formattingFunction
 {
 public:
     virtual void doIt(const OutputClass *outputObj) const = 0;
-    virtual void toString(const OutputClass *outputObj, std::string &str);
+    virtual void toString(const OutputClass *outputObj, std::string &str) const = 0;
     virtual int count(const OutputClass *outputObj) const
     {
         REFER(outputObj)
@@ -60,16 +62,17 @@ class functionNoArgB : public formattingFunction
 {
 private:
     fptrbf m_fn;
+    fptrbfs m_fns;
 
 public:
-    functionNoArgB(fptrbf fn) : m_fn(fn) {}
+    functionNoArgB(fptrbf fn, fptrbfs fns) : m_fn(fn), m_fns(fns) {}
     void doIt(const OutputClass *outputObj) const
     {
-        (((const basefrm *)outputObj)->printToFile)((((const basefrm *)outputObj)->*m_fn)().c_str());
+        (((const basefrm *)outputObj)->*m_fn)();
     }
     void toString(const OutputClass *outputObj, std::string &str) const
     {
-        str.append((((const basefrm *)outputObj)->*m_fn)());
+        (((const basefrm *)outputObj)->*m_fns)(str);
     }
     virtual bool skip(const basefrm *bf) const
     {
@@ -148,10 +151,11 @@ class functionNoArgW : public formattingFunction
 {
 private:
     fptrbf m_fn;
+    fptrbfs m_fns;
     fptcountbf m_fncount;
 
 public:
-    functionNoArgW(fptrbf fn, fptcountbf fncount) : m_fn(fn), m_fncount(fncount) {}
+    functionNoArgW(fptrbf fn, fptrbfs fns, fptcountbf fncount) : m_fn(fn), m_fns(fns), m_fncount(fncount) {}
     void doIt(const OutputClass *outputObj) const
     {
         const basefrm *tmp = (const basefrm *)outputObj;
@@ -159,7 +163,7 @@ public:
     }
     void toString(const OutputClass *outputObj, std::string &str) const
     {
-        str.append((((const basefrm *)outputObj)->*m_fn)());
+        (((const basefrm *)outputObj)->*m_fns)(str);
     }
     virtual bool skip(const basefrm *bf) const
     {

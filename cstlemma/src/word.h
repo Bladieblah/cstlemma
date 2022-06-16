@@ -102,7 +102,7 @@ protected:
     }
     void fString(std::string &str) const
     {
-        char toAdd[3];
+        char toAdd[100];
         sprintf(toAdd, "%d", cnt);
         str.append(toAdd);
     }

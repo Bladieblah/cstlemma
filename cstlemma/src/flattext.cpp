@@ -236,7 +236,6 @@ static char *getword(string str, string::size_type &pos, const char *&tag, int k
 {
     static int punct = 0;
     static char buf[1000];
-    static char buf2[256]; // tag
     static int eof = false;
     static int prevkar = 0;
     newlines = 0;
@@ -388,11 +387,6 @@ void flattext::printUnsorted(FILE *fpo)
         }
         Word::NewLinesAfterWord = 0;
     }
-}
-{
-    REFER(buf)
-    REFER(lastBufByte)
-    return s;
 }
 
 void flattext::writeUnsorted(string &str)
@@ -578,10 +572,6 @@ flattext::flattext(string str, int keepPunctuation, bool nice,
     StartOfLine = true;
     fields = 0;
     const char *Tag;
-    
-    field *wordfield = 0;
-    field *tagfield = 0;
-    field *format = 0;
     
     int slashFound = 0;
     

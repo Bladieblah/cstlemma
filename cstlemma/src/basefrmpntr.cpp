@@ -168,7 +168,7 @@ void baseformpointer::printFn(FILE *fp, bfns Fn, const char *sep)
                     print(fp, sep);
                 else
                     doSep = true;
-                fprintf(fp, "%s", (bfp->bf->*Fn)()->c_str());
+                fprintf(fp, "%s", (bfp->bf->*Fn)().c_str());
             }
         }
         bfp = bfp->next;
@@ -186,7 +186,7 @@ void baseformpointer::printFn(FILE *fp, bfns Fn, const char *sep)
                         print(fp, sep);
                     else
                         doSep = true;
-                    fprintf(fp, "%s", (bfp->bf->*Fn)()->c_str());
+                    fprintf(fp, "%s", (bfp->bf->*Fn)().c_str());
                 }
             }
             bfp = bfp->next;

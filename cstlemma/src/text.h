@@ -114,7 +114,7 @@ public:
     void createTaggedAlternatives(char *w, const char *tag);
     void createTagged(const char *w, const char *tag);
     virtual void printUnsorted(FILE *fpo) = 0;
-    virtual void writeUnsorted(std::string str) = 0;
+    virtual void writeUnsorted(std::string &str) = 0;
     void makeList();
 };
 

@@ -56,7 +56,7 @@ formattingFunction *basefrm::getBasefrmFunction(int character, bool &DummySortIn
     switch (character)
     {
     case 'f':
-        return new functionNoArgB(&basefrm::F);
+        return new functionNoArgB(&basefrm::F, &basefrm::FString);
 #if FREQ24
     case 'n':
         return new functionNoArgB(&basefrm::N);
@@ -64,14 +64,14 @@ formattingFunction *basefrm::getBasefrmFunction(int character, bool &DummySortIn
         /*case 'p':
         return new functionNoArgB(&basefrm::P);*/
     case 'w':
-        return new functionNoArgB(&basefrm::W);
+        return new functionNoArgB(&basefrm::W, &basefrm::WString);
     case 'W':
         hasW = true;
         testType |= NUMBERTEST;
-        return new functionNoArgW(&basefrm::L, &basefrm::countFullForms);
+        return new functionNoArgW(&basefrm::L, &basefrm::LString, &basefrm::countFullForms);
         //            return new functionNoArgB(&basefrm::L);
     case 't':
-        return new functionNoArgB(&basefrm::T);
+        return new functionNoArgB(&basefrm::T, &basefrm::TString);
     }
     return 0;
 }
@@ -86,20 +86,20 @@ formattingFunction *basefrm::getBasefrmFunctionNoW(int character, bool &DummySor
         basefrm::hasW = true; // Lemma frequency is sum of
                               // full form frequencies, so full form
                               // pointers must be added to each base form.
-        return new functionNoArgB(&basefrm::F);
+        return new functionNoArgB(&basefrm::F, &basefrm::FString);
 #if FREQ24
     case 'n':
         return new functionNoArgB(&basefrm::N);
 #endif
     case 'w':
-        return new functionNoArgB(&basefrm::W);
+        return new functionNoArgB(&basefrm::W, &basefrm::WString);
     case 't':
-        return new functionNoArgB(&basefrm::T);
+        return new functionNoArgB(&basefrm::T, &basefrm::TString);
 #if PRINTRULE
     case 'p':
-        return new functionNoArgB(&basefrm::P);
+        return new functionNoArgB(&basefrm::P, &basefrm::PString);
     case 'r':
-        return new functionNoArgB(&basefrm::R);
+        return new functionNoArgB(&basefrm::R, &basefrm::RString);
 #endif
     }
     return 0;
@@ -150,7 +150,7 @@ void basefrm::addFullForm(Word *word)
     }
 }
 
-string basefrm::L() const
+void basefrm::L() const
 {
     assert(basefrm::hasW);
     for (unsigned int i = 0; i < nfullForm; ++i)
@@ -160,7 +160,8 @@ string basefrm::L() const
             print(m_fp, sep);
     }
 }
-string basefrm::LString(string &str) const
+
+void basefrm::LString(string &str) const
 {
     assert(basefrm::hasW);
     for (unsigned int i = 0; i < nfullForm; ++i)
@@ -356,40 +357,39 @@ void basefrm::printToFile(const char *s) const
 
 void (*print)(FILE *fpo, const char *s) = printOther;
 
-string basefrm::T() const
+void basefrm::T() const
 {
-    char *c;
-    sprintf(c, "%s", m_t);
-    return string(c);
+    print(basefrm::m_fp, m_t);
+}
+void basefrm::TString(string &str) const
+{
+    str.append(m_t);
 }
 
-string basefrm::W() const
+void basefrm::W() const
 {
-    char *c;
-    sprintf(c, "%s", m_s);
-    return string(c);
+    print(basefrm::m_fp,m_s);
+}
+
+void basefrm::WString(string &str) const
+{
+    str.append(m_s);
 }
 
 #if PRINTRULE
-string basefrm::P() const
+void basefrm::P() const
 {
-    char *c;
-    sprintf(c, "%s", m_p);
-    return string(c);
+    print(basefrm::m_fp, m_p);
 }
-string basefrm::R() const
+void basefrm::R() const
 {
-    char *c;
-    sprintf(c, "%s", m_r());
-    return string(c);
+    print(basefrm::m_fp, m_r());
 }
-string basefrm::PString(string &str) const
+void basefrm::PString(string &str) const
 {
-    char *c;
-    sprintf(c, "%s", m_p);
-    return string(c);
+    str.append(m_p);
 }
-string basefrm::RString(string &str) const
+void basefrm::RString(string &str) const
 {
     str.append(m_r());
 }

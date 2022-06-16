@@ -60,27 +60,32 @@ public:
     static FILE *m_fp;
 
 public:
-    std::string T() const;
+    void T() const;
+    void TString(std::string &str) const;
 
 private:
-    std::string F() const
+    void F() const
     {
-        char *c;
-        sprintf(c, "%d", lemmaFreq()); // shows the frequency of the lemma in the current text.
-        return std::string(c);
+        fprintf(m_fp, "%d", lemmaFreq()); // shows the frequency of the lemma in the current text.
     }
-    std::string W() const;
-    std::string L() const;
-    std::string WString(std::string &str) const;
-    std::string LString(std::string &str) const;
+    void FString(std::string &str) const
+    {
+        char c[100];
+        sprintf(c, "%d", lemmaFreq()); // shows the frequency of the lemma in the current text.
+        str.append(c);
+    }
+    void W() const;
+    void WString(std::string &str) const;
+    void L() const;
+    void LString(std::string &str) const;
 
 public:
     void printToFile(const char *s) const;
 #if PRINTRULE
-    std::string P() const;
-    std::string R() const;
-    std::string PString(std::string &str) const;
-    std::string RString(std::string &str) const;
+    void P() const;
+    void R() const;
+    void PString(std::string &str) const;
+    void RString(std::string &str) const;
 #endif
     static functionTree *bfuncs; // used if -W option set
     static functionTree *Bfuncs; // used if -W option set
