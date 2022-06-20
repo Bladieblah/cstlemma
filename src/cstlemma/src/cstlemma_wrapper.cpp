@@ -71,7 +71,7 @@ PyObject *delete_object(PyObject *self, PyObject *args) {
     return Py_BuildValue("");
 }
 
-PyMethodDef LemmatiserFunctions[] = {
+PyMethodDef cLemmatiserFunctions[] = {
     {"construct",
       construct, METH_VARARGS,
      "Create `Lemmatiser` object"},
@@ -90,7 +90,7 @@ PyMethodDef LemmatiserFunctions[] = {
 };
 
 
-struct PyModuleDef pycstlemmaModule = {
+struct PyModuleDef cLemmatiserModule = {
 /*
  *  Structure which defines the module.
  *
@@ -98,14 +98,14 @@ struct PyModuleDef pycstlemmaModule = {
  *
  */
    PyModuleDef_HEAD_INIT,
-   "pycstlemma",
+   "cLemmatiser",
    "Lemmatiser for Dutch sentences", // Docstring for the module - in this case empty.
    -1,                   // Used by sub-interpreters, if you do not know what
                          // it is then you do not need it, keep -1 .
-   LemmatiserFunctions
+   cLemmatiserFunctions
 };
 
 
-PyMODINIT_FUNC PyInit_pycstlemma(void) {
-    return PyModule_Create(&pycstlemmaModule);
+PyMODINIT_FUNC PyInit_cLemmatiser(void) {
+    return PyModule_Create(&cLemmatiserModule);
 }
