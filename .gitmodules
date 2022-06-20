@@ -7,3 +7,12 @@
 [submodule "hashmap"]
 	path = src/hashmap
 	url = https://github.com/kuhumcst/hashmap
+[submodule "src/parsesgml"]
+	path = src/parsesgml
+	url = https://github.com/kuhumcst/parsesgml
+[submodule "src/letterfunc"]
+	path = src/letterfunc
+	url = https://github.com/kuhumcst/letterfunc
+[submodule "src/hashmap"]
+	path = src/hashmap
+	url = https://github.com/kuhumcst/hashmap
