@@ -1,0 +1,5 @@
+# don't include binary output and build artifacts
+cstlemma
+build/*
+.vscode/*
+*.o

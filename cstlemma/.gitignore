@@ -1,4 +1,0 @@
-# don't include binary output and build artifacts
-/cstlemma
-/lib/
-/src/*.o
