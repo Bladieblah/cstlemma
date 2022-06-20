@@ -3,3 +3,5 @@ cstlemma
 build/*
 .vscode/*
 *.o
+
+*.egg-info

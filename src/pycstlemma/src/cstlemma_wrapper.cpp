@@ -22,11 +22,7 @@ using namespace std;
 // ------------------- Class wrappers -------------------
 
 PyObject *construct(PyObject *self, PyObject *args) {
-    vector<string> s;
     PyObject *pobj;
-    PyArg_ParseTuple(args, "O", &pobj);
-    
-    s = listToVectorString(pobj);
 
     optionStruct Option;
 
@@ -94,7 +90,7 @@ PyMethodDef LemmatiserFunctions[] = {
 };
 
 
-struct PyModuleDef LemmatiserModule = {
+struct PyModuleDef pycstlemmaModule = {
 /*
  *  Structure which defines the module.
  *
@@ -110,6 +106,6 @@ struct PyModuleDef LemmatiserModule = {
 };
 
 
-PyMODINIT_FUNC PyInit_Lemmatiser(void) {
-    return PyModule_Create(&LemmatiserModule);
+PyMODINIT_FUNC PyInit_pycstlemma(void) {
+    return PyModule_Create(&pycstlemmaModule);
 }
