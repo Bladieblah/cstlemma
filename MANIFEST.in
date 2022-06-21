@@ -1,3 +1,4 @@
+include src/cstlemma/src/*
 include src/pycstlemma/src/*
 include src/hashmap/src/*
 include src/letterfunc/src/*
