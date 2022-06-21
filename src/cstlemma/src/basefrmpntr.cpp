@@ -245,7 +245,7 @@ void baseformpointer::writefbf(string &str, functionTree *fns, const char *sep)
         baseformpointer *bfp = this;
         while (bfp)
         {
-            if (!bfp->hidden)
+            if (!bfp->hidden && !bfp->next)
             {
                 if (!hasDuplicateLemma(this, bfp))
                 {

@@ -67,7 +67,9 @@ void functionTree::writeIt(const OutputClass *outputObj, string &str) const
         if (!skip(outputObj))
         {
             if (m_fnc)
+            {
                 m_fnc->toString(outputObj, str);
+            }
             if (child)
             {
                 child->writeIt(outputObj, str);
