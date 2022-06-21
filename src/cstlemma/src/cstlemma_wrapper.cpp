@@ -6,10 +6,7 @@
 
 #include "lemmatiser.h"
 #include "option.h"
-#if defined PROGLEMMATISE
 #include "word.h"
-#include "caseconv.h"
-#endif
 
 #include <stdio.h>
 #include <stddef.h>
@@ -17,18 +14,15 @@
 
 using namespace std;
 
-using namespace std;
-
-// ------------------- Class wrappers -------------------
-
 PyObject *construct(PyObject *self, PyObject *args) {
-    PyObject *pobj;
+    char *flexFile, *dictFile;
+    PyArg_ParseTuple(args, "ss", &flexFile, &dictFile);
 
     optionStruct Option;
 
     Option.doSwitch('L', (char *)"", "");
-    Option.doSwitch('f', (char *)"rules/flexrules_nl", "");
-    Option.doSwitch('d', (char *)"rules/dict_nl", "");
+    Option.doSwitch('f', flexFile, "");
+    Option.doSwitch('d', dictFile, "");
     Option.doSwitch('c', (char *)"$b ", "");
     Option.doSwitch('b', (char *)"$w", "");
 
