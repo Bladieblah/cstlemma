@@ -34,21 +34,14 @@ int main(int argc, char *argv[])
 {   
     optionStruct Option;
     
-    cout << "reading options\n";
-    // OptReturnTp optResult = Option.readArgs(6, (char **)&options);
-    // OptReturnTp optResult = Option.readArgs(argc, argv);
-    Option.doSwitch('L', "", argv[0]);
-    Option.doSwitch('f', "rules/flexrules_nl", argv[0]);
-    Option.doSwitch('d', "rules/dict_nl", argv[0]);
-    Option.doSwitch('c', (char *)"$b ", "");
-    Option.doSwitch('b', (char *)"$w", "");
-    cout << "done options\n";
-    
-    cout << "lemmatiser\n";
+    Option.doSwitch('L', (char *)"", argv[0]);
+    Option.doSwitch('f', (char *)"rules/flexrules_nl", argv[0]);
+    Option.doSwitch('d', (char *)"rules/dict_nl", argv[0]);
+    Option.doSwitch('c', (char *)"$b ", argv[0]);
+    Option.doSwitch('b', (char *)"$w", argv[0]);
+
     Lemmatiser theLemmatiser(Option);
-    cout << "lemmatising\n";
     cout << theLemmatiser.LemmatiseString(string("hoi ik ga een abonnement opzeggen heb ik opgezegd ik zeg op")) << endl;
-    cout << "done\n";
     Word::deleteStaticMembers();
     
     return 0;
