@@ -9,6 +9,9 @@ class CstLemmatiser:
     def construct(self):
         self.lemmatiser_capsule = cLemmatiser.construct(self.flex_file, self.dict_file)
 
+    def lemmatise_string(self, string):
+        return cLemmatiser.lemmatiseString(self.lemmatiser_capsule, string)
+
     def lemmatise_strings(self, strings):
         return cLemmatiser.lemmatiseStrings(self.lemmatiser_capsule, strings)
 

@@ -34,6 +34,22 @@ PyObject *construct(PyObject *self, PyObject *args) {
     return Py_BuildValue("O", lemmatiserCapsule);
 }
 
+PyObject *lemmatiseString(PyObject *self, PyObject *args) {
+    string str, result;
+    PyObject *pobj;
+    Py_ssize_t size;
+    
+    PyObject *lemmatiserCapsule_;
+    PyArg_ParseTuple(args, "OO", &lemmatiserCapsule_, &pobj);
+    str = PyUnicode_AsUTF8AndSize(pobj, &size);
+    
+    Lemmatiser *lemmatiser = (Lemmatiser *)PyCapsule_GetPointer(lemmatiserCapsule_, "lemmaPtr");
+
+    result = lemmatiser->LemmatiseString(str);
+    
+    return Py_BuildValue("O", PyUnicode_FromString(result.c_str()));
+}
+
 PyObject *lemmatiseStrings(PyObject *self, PyObject *args) {
     vector<string> s, result;
     PyObject *pobj;
@@ -69,6 +85,10 @@ PyMethodDef cLemmatiserFunctions[] = {
     {"construct",
       construct, METH_VARARGS,
      "Create `Lemmatiser` object"},
+    
+    {"lemmatiseString",
+      lemmatiseString, METH_VARARGS,
+     "Lemmatise a string"},
     
     {"lemmatiseStrings",
       lemmatiseStrings, METH_VARARGS,
