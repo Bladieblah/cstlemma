@@ -82,7 +82,7 @@ struct optionStruct
     char * Iformat;                         // -I text::text
     int keepPunctuation;                    // -p text::text
 #endif
-    bool nice;                              // -y makedict, text::text, text::Lemmatise
+    bool nice;                       // -y makedict, text::text, text::Lemmatise
 #if defined PROGLEMMATISE
     unsigned long int size;                 // -m text::text
     bool treatSlashAsAlternativesSeparator; // -A text::text

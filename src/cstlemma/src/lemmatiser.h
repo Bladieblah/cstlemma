@@ -51,13 +51,14 @@ private:
         dictionary dict;
         static tagpairs *TextToDictTags;
 #endif
-        optionStruct &Option;
         int listLemmas;
         int status;
         bool SortInput; // derived from other options
         bool changed;
 
 public:
+        optionStruct &Option;
+        bool nice;
         int getStatus()
         {
                 return status;

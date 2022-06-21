@@ -81,6 +81,7 @@ const char *Lemmatiser::translate(const char *tag)
 
 Lemmatiser::Lemmatiser(optionStruct &a_Option) : listLemmas(0), SortInput(false), Option(a_Option), changed(true)
 {
+    nice = Option.nice;
     instance++;
     if (instance == 1)
     {
@@ -186,7 +187,7 @@ int Lemmatiser::MakeDict()
     }
     else
         fpout = stdout;
-    int ret = makedict(fpin, fpout, Option.nice, Option.cformat, Option.freq, Option.CollapseHomographs);
+    int ret = makedict(fpin, fpout, nice, Option.cformat, Option.freq, Option.CollapseHomographs);
     if (fpin != stdin)
         fclose(fpin);
     if (fpout != stdout)
@@ -236,7 +237,7 @@ int Lemmatiser::MakeFlexPatterns()
         fpflex = stdout;
 
     int failed;
-    Flex.makeFlexRules(fpdict, fpflex, Option.nice, Option.cformat, failed, Option.CutoffRefcount, Option.showRefcount, Option.argo);
+    Flex.makeFlexRules(fpdict, fpflex, nice, Option.cformat, failed, Option.CutoffRefcount, Option.showRefcount, Option.argo);
     if (fpdict != stdin)
         fclose(fpdict);
 
@@ -408,59 +409,9 @@ int Lemmatiser::openFiles()
         {
             info("-f\t%s\tFile with flex patterns.", Option.flx);
         }
-        else if (Option.InputHasTags)
-        {
-            // 20110114 Check that folder exists
-            char *tmp = new char[strlen(Option.flx) + 1];
-            strcpy(tmp, Option.flx);
-            char *slash = tmp + strlen(tmp);
-            while (--slash >= tmp)
-#ifdef _MSC_VER // VC
-                if (*slash == '\\')
-                {
-                    *slash = '\0';
-                    /*
-                    modes are as follows...
-                    00 Existence only
-                    02 Write permission
-                    04 Read permission
-                    06 Read and write permission
-                    */
-                    if (_access((*tmp ? tmp : "."), 0) == -1)
-                    {
-                        info("-f\t%-20s\t(Flexpatterns): Folder %s does not exist or is not readable. Cannot open flex pattern files.", Option.flx, tmp);
-
-                        delete[] tmp;
-                        return -1;
-                    }
-                    break;
-                }
-#else // *N?X
-                if (*slash == '/')
-                {
-                    *slash = '\0';
-                    FILE *d = fopen((*tmp ? tmp : "."), "r");
-                    if (d == NULL)
-                    {
-                        info("-f\t%-20s\t(Flexpatterns): Folder %s does not exist or is not readable. Cannot open flex pattern files.", Option.flx, tmp);
-
-                        delete[] tmp;
-                        return -1;
-                    }
-                    else
-                        fclose(d);
-                    break;
-                }
-#endif
-            info("-f\t%-20s\t(Flexpatterns): Cannot open file. Assuming that tag-specific files exist in folder %s with prefix %s.", Option.flx, (slash < tmp) ? "." : tmp, slash + 1);
-
-            delete[] tmp;
-        }
         else
         {
-            info("-f\t%-20s\t(Flexpatterns): Cannot open file.", Option.flx);
-
-            return -1;
+            cannotOpenFile("-f\t", Option.flx, "\t(Flexrules): Cannot open file.");
         }
     }
     else
@@ -468,16 +419,19 @@ int Lemmatiser::openFiles()
         LOG1LINE("-f  Flexpatterns: File not specified.");
         return -1;
     }
+
     if (Option.dictfile)
     {
         fpdict = fopen(Option.dictfile, "rb");
-        if (!fpdict)
+        if (fpdict)
+        {
+            info("-d\t%s\tFile with dict patterns.", Option.dictfile);
+        }
+        else
         {
             cannotOpenFile("-d\t", Option.dictfile, "\t(Dictionary): Cannot open file.");
             return -1;
         }
-        else
-            info("-d\t%-20s\tDictionary", Option.dictfile);
     }
     else
     {
@@ -549,7 +503,7 @@ int Lemmatiser::openFiles()
         // fpflex contains rules for untagged text. These can be used if tag-specific rules do not exist.
         if (Option.RulesUnique)
             Flex.removeAmbiguous();
-        if (Option.nice)
+        if (nice)
         {
             LOG1LINE("");
             Flex.print();
@@ -568,7 +522,7 @@ int Lemmatiser::openFiles()
     {
         if (TagFriends)
             delete TagFriends;
-        TagFriends = new tagpairs(fpv, Option.nice);
+        TagFriends = new tagpairs(fpv, nice);
         /*                if(!readTags(fpx,nice))
                     {
                     fclose(fpx);
@@ -581,7 +535,7 @@ int Lemmatiser::openFiles()
     {
         if (TextToDictTags)
             delete TextToDictTags;
-        TextToDictTags = new tagpairs(fpx, Option.nice);
+        TextToDictTags = new tagpairs(fpx, nice);
         /*                if(!readTags(fpx,nice))
                     {
                     fclose(fpx);
@@ -592,7 +546,7 @@ int Lemmatiser::openFiles()
 
     if (fpz)
     {
-        if (!readLemmaTags(fpz, Option.nice))
+        if (!readLemmaTags(fpz, nice))
         {
             fclose(fpz);
             return -1;
@@ -600,7 +554,7 @@ int Lemmatiser::openFiles()
         fclose(fpz);
     }
 
-    if (Option.nice && fpdict)
+    if (nice && fpdict)
         printf("\nreading dictionary \"%s\"\n", Option.dictfile);
 
     dict.initdict(fpdict);
@@ -730,7 +684,7 @@ void Lemmatiser::showSwitches()
     else
         info("-e-\tDon't use case conversion.");
 
-    if (Option.nice)
+    if (nice)
         LOG1LINE("reading text\n");
 }
 
@@ -761,11 +715,11 @@ void Lemmatiser::LemmatiseText(FILE *fpin, FILE *fpout, tallyStruct *tally)
     }
     else
     {
-        Text = new flattext(fpin, Option.InputHasTags, Option.Iformat, Option.keepPunctuation, Option.nice, Option.size, Option.treatSlashAsAlternativesSeparator);
+        Text = new flattext(fpin, Option.InputHasTags, Option.Iformat, Option.keepPunctuation, nice, Option.size, Option.treatSlashAsAlternativesSeparator);
     }
-    if (Option.nice)
+    if (nice)
         LOG1LINE("processing");
-    Text->Lemmatise(fpout, Option.Sep, tally, Option.SortOutput, Option.UseLemmaFreqForDisambiguation, Option.nice, Option.DictUnique, Option.RulesUnique, Option.baseformsAreLowercase, listLemmas, Option.Wformat != NULL                         // list lemmas with all word forms
+    Text->Lemmatise(fpout, Option.Sep, tally, Option.SortOutput, Option.UseLemmaFreqForDisambiguation, nice, Option.DictUnique, Option.RulesUnique, Option.baseformsAreLowercase, listLemmas, Option.Wformat != NULL                         // list lemmas with all word forms
                                                                                                                                                                                                          && ((listLemmas & 3) == 3)                 // both of -b and -B are specified
                                                                                                                                                                                                          && !strcmp(Option.Bformat, Option.bformat) // -b and -B options are the same format
                                                                                                                                                                                                                                                     // true: outputs must be merged
@@ -898,16 +852,12 @@ string Lemmatiser::LemmatiseString(string str)
 
     text *Text;
 
-    Text = new flattext(str, Option.keepPunctuation, Option.nice, Option.size, Option.treatSlashAsAlternativesSeparator);
+    Text = new flattext(str, 1, nice, ULONG_MAX, false);
     
-    if (Option.nice)
+    if (nice)
         LOG1LINE("processing");
     
-    result = Text->Lemmatise(Option.Sep, &tally, Option.SortOutput, Option.UseLemmaFreqForDisambiguation, Option.nice, Option.DictUnique, Option.RulesUnique, Option.baseformsAreLowercase, listLemmas, Option.Wformat != NULL                         // list lemmas with all word forms
-                                                                                                                                                                                                         && ((listLemmas & 3) == 3)                 // both of -b and -B are specified
-                                                                                                                                                                                                         && !strcmp(Option.Bformat, Option.bformat) // -b and -B options are the same format
-                                                                                                                                                                                                                                                    // true: outputs must be merged
-    );
+    result = Text->Lemmatise("|", &tally, 0, 2, nice, false, false, caseTp::easis, listLemmas, false);
     delete Text;
 
     return result;

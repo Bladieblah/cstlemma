@@ -404,7 +404,7 @@ bool Word::setFormat(const char *cformat, const char *bformat, const char *Bform
             exit(0);
         }
     }
-    else if (bformat)
+    else if (Bformat)
     {
         fprintf(stderr, "Warning: -B pattern specified on commandline but not used. (Output format %s doesn't specify flexrule field $B)\n", cformat);
     }
