@@ -13,7 +13,7 @@ pip install .
 or running
 
 ```
-pip install git+
+pip install git+https://github.com/Bladieblah/pycstlemma.git
 ```
 
 ## Usage
