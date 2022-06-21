@@ -2,7 +2,7 @@ from setuptools import Extension, setup
 
 import os
 
-print('CWD =', os.getcwd())
+cwd = os.getcwd()
 
 # Definition of extension modules
 pycstlemma = Extension('cLemmatiser',
@@ -48,10 +48,10 @@ pycstlemma = Extension('cLemmatiser',
                     'src/parsesgml/src/parsesgml.cpp',
                 ],
                  include_dirs = [
-                    'src/cstlemma/src',
-                    'src/hashmap/src',
-                    'src/letterfunc/src',
-                    'src/parsesgml/src',
+                    os.path.join(cwd, 'src/cstlemma/src'),
+                    os.path.join(cwd, 'src/hashmap/src'),
+                    os.path.join(cwd, 'src/letterfunc/src'),
+                    os.path.join(cwd, 'src/parsesgml/src'),
                 ],
                 extra_compile_args=[
                     '-std=c++11',
