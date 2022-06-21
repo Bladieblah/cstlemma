@@ -1,5 +1,9 @@
 from setuptools import Extension, setup
 
+import os
+
+print('CWD =', os.getcwd())
+
 # Definition of extension modules
 pycstlemma = Extension('cLemmatiser',
                  sources = [
