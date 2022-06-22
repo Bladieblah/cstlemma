@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     Option.doSwitch('b', (char *)"$w", argv[0]);
 
     Lemmatiser theLemmatiser(Option);
-    cout << theLemmatiser.LemmatiseString(string("hoi ik ga een abonnement opzeggen heb ik opgezegd ik zeg op")) << endl;
+    cout << theLemmatiser.LemmatiseString(string("hoi ik ga een abonnement opzeggen heb ik opgezegd ik zeg mijn zorgverzekeraar op")) << endl;
     Word::deleteStaticMembers();
     
     return 0;

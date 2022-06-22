@@ -123,8 +123,11 @@ protected:
     }
     void bString(std::string &str) const
     {
-        if (pbfD)
+        if (pbfD) {
             pbfD->writefbf(str, bfuncs, sep);
+        } else {
+            str.append(m_word);
+        }
     }
 
     void B() const
