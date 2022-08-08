@@ -1,4 +1,7 @@
 from setuptools import Extension, setup
+import os
+
+os.environ['CC'] = 'g++'
 
 # Definition of extension modules
 pycstlemma = Extension('cLemmatiser',
