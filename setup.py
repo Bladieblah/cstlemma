@@ -1,5 +1,7 @@
 from setuptools import Extension, setup
+import os
 
+os.environ['CC'] = 'clang'
 
 # Definition of extension modules
 pycstlemma = Extension('cLemmatiser',
