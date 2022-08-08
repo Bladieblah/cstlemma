@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "outputclass.h"
 #include "basefrmpntr.h"
 #include <stdio.h>
+#include <string.h>
 #include <string>
 
 class taggedWord;
@@ -202,19 +203,19 @@ public:
     static const char *sep;
     int itsCnt() const { return cnt; }
     const char *itsWord() const { return m_word; }
-    int cmpword(const Word *other) const { return std::strcmp(m_word, other->m_word); }
+    int cmpword(const Word *other) const { return strcmp(m_word, other->m_word); }
     static cmp_f cmp;
     int comp_fw(const Word *w) const
     {
         int c = w->cnt - cnt;
         if (!c)
-            c = std::strcmp(m_word, w->m_word);
+            c = strcmp(m_word, w->m_word);
         return c;
     }
 
     int comp_wf(const Word *w) const
     {
-        int c = std::strcmp(m_word, w->m_word);
+        int c = strcmp(m_word, w->m_word);
         if (!c)
             c = w->cnt - cnt;
         return c;
@@ -399,61 +400,61 @@ public:
     static cmp_ft comp;
     int cmptaggedword(const taggedWord *other) const
     {
-        int c = std::strcmp(m_tag, other->m_tag);
+        int c = strcmp(m_tag, other->m_tag);
         if (!c)
-            c = std::strcmp(m_word, other->m_word);
+            c = strcmp(m_word, other->m_word);
         return c;
     }
     int cmp_ftw(const taggedWord *w) const
     {
         int c = ((taggedWord *)w)->cnt - cnt;
         if (!c)
-            c = std::strcmp(m_tag, ((taggedWord *)w)->m_tag);
+            c = strcmp(m_tag, ((taggedWord *)w)->m_tag);
         if (!c)
-            c = std::strcmp(m_word, w->m_word);
+            c = strcmp(m_word, w->m_word);
         return c;
     }
     int cmp_fwt(const taggedWord *w) const
     {
         int c = ((taggedWord *)w)->cnt - cnt;
         if (!c)
-            c = std::strcmp(m_word, w->m_word);
+            c = strcmp(m_word, w->m_word);
         if (!c)
-            c = std::strcmp(m_tag, ((taggedWord *)w)->m_tag);
+            c = strcmp(m_tag, ((taggedWord *)w)->m_tag);
         return c;
     }
     int cmp_wft(const taggedWord *w) const
     {
-        int c = std::strcmp(m_word, w->m_word);
+        int c = strcmp(m_word, w->m_word);
         if (!c)
             c = ((taggedWord *)w)->cnt - cnt;
         if (!c)
-            c = std::strcmp(m_tag, ((taggedWord *)w)->m_tag);
+            c = strcmp(m_tag, ((taggedWord *)w)->m_tag);
         return c;
     }
     int cmp_wtf(const taggedWord *w) const
     {
-        int c = std::strcmp(m_word, w->m_word);
+        int c = strcmp(m_word, w->m_word);
         if (!c)
-            c = std::strcmp(m_tag, ((taggedWord *)w)->m_tag);
+            c = strcmp(m_tag, ((taggedWord *)w)->m_tag);
         if (!c)
             c = ((taggedWord *)w)->cnt - cnt;
         return c;
     }
     int cmp_tfw(const taggedWord *w) const
     {
-        int c = std::strcmp(m_tag, ((taggedWord *)w)->m_tag);
+        int c = strcmp(m_tag, ((taggedWord *)w)->m_tag);
         if (!c)
             c = ((taggedWord *)w)->cnt - cnt;
         if (!c)
-            c = std::strcmp(m_word, w->m_word);
+            c = strcmp(m_word, w->m_word);
         return c;
     }
     int cmp_twf(const taggedWord *w) const
     {
-        int c = std::strcmp(m_tag, ((taggedWord *)w)->m_tag);
+        int c = strcmp(m_tag, ((taggedWord *)w)->m_tag);
         if (!c)
-            c = std::strcmp(m_word, w->m_word);
+            c = strcmp(m_word, w->m_word);
         if (!c)
             c = ((taggedWord *)w)->cnt - cnt;
         return c;
