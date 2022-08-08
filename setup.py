@@ -53,7 +53,8 @@ pycstlemma = Extension('cLemmatiser',
                 extra_compile_args=[
                     '-std=c++11',
                     '-Wno-reorder'
-                ]
+                ],
+                language='c++'
             )
 
 setup(ext_modules = [pycstlemma])
