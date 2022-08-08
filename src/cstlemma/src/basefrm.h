@@ -99,12 +99,12 @@ public:
     static void setFile(FILE *a_fp);
 
     int cmpf(const basefrm *b) const { return b->lemmaFreq() - lemmaFreq(); }
-    int cmpt(const basefrm *b) const { return strcmp(m_t, b->m_t); }
-    int cmps(const basefrm *b) const { return strcmp(m_s, b->m_s); }
+    int cmpt(const basefrm *b) const { return std::strcmp(m_t, b->m_t); }
+    int cmps(const basefrm *b) const { return std::strcmp(m_s, b->m_s); }
 #if PRINTRULE
     int cmpp(const basefrm *b) const
     {
-        return strcmp(m_p, b->m_p);
+        return std::strcmp(m_p, b->m_p);
     }
 #endif
     baseformpointer &m_owner;
@@ -142,7 +142,7 @@ public:
     {
 #if PRINTRULE
         /* s contains lemma\vrule */
-        if (strcmp(t, this->m_t))
+        if (std::strcmp(t, this->m_t))
             return false;
         const char *S = this->m_s;
         while (*s == *S)
@@ -152,7 +152,7 @@ public:
         }
         return !*S && (!*s || *s == '\v');
 #else
-        return !strcmp(s, this->m_s) && !strcmp(t, this->m_t);
+        return !std::strcmp(s, this->m_s) && !std::strcmp(t, this->m_t);
 #endif
     }
     int Closeness(const char *tag);
